@@ -35,9 +35,7 @@ fps = 60
 
 clock = pygame.time.Clock()
 
-#br101.setNumberLanes(params['sentido1Faixas'], params['sentido2Faixas'])
-
-br101.setNumberLanes(2,2)
+br101.setNumberLanes(params['sentido1Faixas'], params['sentido2Faixas'])
 
 cars = []
 
@@ -66,29 +64,22 @@ numberSaved = 0
 timer = 1000
 
 
-def update(timer,numberSaved,to_save):
+def update(timer,to_save):
+    isSaved = False
     for car in cars:
         car.update()
         to_save.append(car.getData())
     if timer <= 0:
-        to_save = json.dumps(to_save)
-        # Serializing json
-        #Writing to sample.json
-        with open(path +params['nomeRodovia']+" : " + str(numberSaved), "w") as outfile:
-            print(path +params['nomeRodovia']+"_" + str(numberSaved)+".json", "w")
-            outfile.write(to_save)
-        numberSaved += 1
-        timer = 5000
-        pygame.quit()
-        quit()
-        to_save = []
-    return to_save
+        isSaved = True
+    return to_save,isSaved
 
 timer = 5000
 timerCreate = 1000
-to_save = []
+to_save = {}
+total_time = 0
 while True:
     ms = clock.tick(fps)
+    to_save_frame = []
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -96,8 +87,20 @@ while True:
     timer -= ms
     timerCreate -= ms
     if timerCreate <= 0:
-        cars.append(carros.Cars(-1,Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
+        if np.random.rand() > params['probabilidadeDeEntradaDeVeiculo']:
+            cars.append(carros.Cars(-1,Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
         timerCreate = 1000
-    to_save = update(timer,numberSaved,to_save)
+    to_save_frame,isSaved = update(timer,to_save_frame)
+    to_save[total_time] = to_save_frame
+    if isSaved:
+        to_save = json.dumps(to_save)
+        # Serializing json
+        #Writing to sample.json
+        with open(path +params['nomeRodovia']+"_"+ str(numberSaved)+".json", "w") as outfile:
+            outfile.write(to_save)
+        numberSaved += 1
+        timer = 5000
+        to_save = {}
+    total_time += ms
     draw()
 

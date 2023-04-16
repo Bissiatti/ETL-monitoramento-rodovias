@@ -62,7 +62,13 @@ class Cars():
         elif self.acc < self.minAcc:
             self.acc = self.minAcc
 
-                
+    def changeLane(self):
+        if self.lane == params['sentido2Faixas'] - 1:
+            self.lane -= 1
+        elif self.lane == - params['sentido1Faixas']:
+            self.lane += 1
+        else:
+            self.lane += (- 1) ** np.random.randint(2)
 
     def getData(self):
-        return {self.placa:(self.posX*12**0.5-self.km0,self.posY)}
+        return {self.placa:(self.posX,self.posY*12**0.5+self.km0)}
