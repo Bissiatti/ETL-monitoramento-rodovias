@@ -63,11 +63,12 @@ numberSaved = 0
 
 timer = 1000
 
-
 def update(timer,to_save):
     isSaved = False
     for car in cars:
-        car.update()
+        toDelete = car.update()
+        if toDelete:
+            cars.remove(car)
         to_save.append(car.getData())
     if timer <= 0:
         isSaved = True

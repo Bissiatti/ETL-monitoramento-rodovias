@@ -32,6 +32,8 @@ class Cars():
         self.color = color
         self.crash = False
         self.placa = placa
+        self.x0 = self.posX
+        self.y0 = self.posY
 
     def draw(self,screen):
         pygame.draw.rect(screen, self.color, pygame.Rect(self.posX,self.posY,self.lengthx,self.lengthy))
@@ -61,6 +63,11 @@ class Cars():
             self.acc = self.maxAcc
         elif self.acc < self.minAcc:
             self.acc = self.minAcc
+        # if distance is more than Width delete car
+        if (self.posY - self.y0)**2 > 800**2:
+            return True
+        else:
+            return False
 
     def changeLane(self):
         if self.lane == params['sentido2Faixas'] - 1:
