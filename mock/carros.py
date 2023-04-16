@@ -9,7 +9,7 @@ params = json.load(open('parametros.json'))
 
 
 class Cars():
-    def __init__(self,Lane,Width,Height,km0,color):
+    def __init__(self,Lane,Width,Height,km0,color,placa):
         self.maxSpeed = params['velocidadeMaxima']
         self.minSpeed = params['velocidadeMinima']
         self.maxAcc = params['AceleracaoMaxima']
@@ -23,7 +23,7 @@ class Cars():
             self.direction = -1
             self.posY = Height + 80
         self.lane = Lane
-        self.vel = np.random.randint(params['velocidadeMinima'],params['velocidadeMaxima'])
+        self.vel = np.random.randint(params['velocidadeMinima'],params['velocidadeMaxima']+1)
         self.acc = 0
         self.dec = 0
         self.lengthx = 50
@@ -31,6 +31,7 @@ class Cars():
         self.km0 = km0
         self.color = color
         self.crash = False
+        self.placa = placa
 
     def draw(self,screen):
         pygame.draw.rect(screen, self.color, pygame.Rect(self.posX,self.posY,self.lengthx,self.lengthy))
@@ -63,5 +64,5 @@ class Cars():
 
                 
 
-    def getPosition(self):
-        return (self.posX-self.km0,self.posY)
+    def getData(self):
+        return {self.placa:(self.posX*12**0.5-self.km0,self.posY)}

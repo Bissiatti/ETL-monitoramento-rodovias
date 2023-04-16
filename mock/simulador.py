@@ -8,6 +8,12 @@ br101 = pistas.Road()
 
 params = json.load(open('parametros.json'))
 
+plate = json.loads(open('placas.json').read())
+
+path = "../data/"
+
+print(len(plate))
+
 pygame.init()
 
 Width = 1280
@@ -46,7 +52,7 @@ colors = [(204, 204, 204),  # cinza claro
           (153, 204, 255),  # azul claro
           (255, 153, 255)]  # roxo claro
 
-cars.append(carros.Cars(-1,Width,Height,100,colors[np.random.randint(0,10)]))
+cars.append(carros.Cars(np.random.randint(-2, 2),Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
 
 def draw():
     screen.fill(bg)
@@ -55,17 +61,43 @@ def draw():
         car.draw(screen)
     pygame.display.update()
 
-def update():
+numberSaved = 0
+
+timer = 1000
+
+
+def update(timer,numberSaved,to_save):
     for car in cars:
         car.update()
+        to_save.append(car.getData())
+    if timer <= 0:
+        to_save = json.dumps(to_save)
+        # Serializing json
+        #Writing to sample.json
+        with open(path +params['nomeRodovia']+" : " + str(numberSaved), "w") as outfile:
+            print(path +params['nomeRodovia']+"_" + str(numberSaved)+".json", "w")
+            outfile.write(to_save)
+        numberSaved += 1
+        timer = 5000
+        pygame.quit()
+        quit()
+        to_save = []
+    return to_save
 
+timer = 5000
+timerCreate = 1000
+to_save = []
 while True:
-    
+    ms = clock.tick(fps)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             quit()
-    update()
+    timer -= ms
+    timerCreate -= ms
+    if timerCreate <= 0:
+        cars.append(carros.Cars(-1,Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
+        timerCreate = 1000
+    to_save = update(timer,numberSaved,to_save)
     draw()
-    clock.tick(fps)
 
