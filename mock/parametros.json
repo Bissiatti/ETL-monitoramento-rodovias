@@ -1,0 +1,16 @@
+{
+    "nomeRodovia": "BR-040",
+    "sentido1Name": "Brasilia",
+    "sentido2Name": "Rio de Janeiro",
+    "sentido1Faixas": 3,
+    "sentido2Faixas": 3,
+    "probabilidadeDeEntradaDeVeiculo": 0.5,
+    "velocidadeMaxima": 10,
+    "velocidadeMinima": 2,
+    "AceleracaoMaxima": 0.1,
+    "AceleracaoMinima": 0.01,
+    "provabilidadeDeTrocaDeFaixa": 0.3,
+    "provabilidadeColisao": 0.1,
+    "tempoColisao": 5,
+    "kilometroInicial": 100
+}
