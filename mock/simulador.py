@@ -12,8 +12,6 @@ plate = json.loads(open('placas.json').read())
 
 path = "../data/"
 
-print(len(plate))
-
 pygame.init()
 
 Width = 1280
@@ -75,7 +73,7 @@ def update(timer,to_save):
     return to_save,isSaved
 
 timer = 5000
-timerCreate = 1000
+timerCreate = 300
 to_save = {}
 total_time = 0
 while True:
@@ -87,9 +85,14 @@ while True:
             quit()
     timer -= ms
     timerCreate -= ms
+    if np.random.rand() < params['probabilidadeDeTrocaDeFaixa']:
+        print("troca")
+        if len(cars) > 0:
+            np.random.choice(cars).changeLane()
     if timerCreate <= 0:
         if np.random.rand() > params['probabilidadeDeEntradaDeVeiculo']:
-            cars.append(carros.Cars(-1,Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
+            lane = np.random.randint(-params['sentido1Faixas'], params['sentido2Faixas'])
+            cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
         timerCreate = 1000
     to_save_frame,isSaved = update(timer,to_save_frame)
     to_save[total_time] = to_save_frame
@@ -97,7 +100,7 @@ while True:
         to_save = json.dumps(to_save)
         # Serializing json
         #Writing to sample.json
-        with open(path +params['nomeRodovia']+"_"+ str(numberSaved)+".json", "w") as outfile:
+        with open(path + params['nomeRodovia'] + "_" + str(numberSaved) + ".json", "w") as outfile:
             outfile.write(to_save)
         numberSaved += 1
         timer = 5000

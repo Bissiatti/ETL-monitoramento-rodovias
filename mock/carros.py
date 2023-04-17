@@ -14,6 +14,8 @@ class Cars():
         self.minSpeed = params['velocidadeMinima']
         self.maxAcc = params['AceleracaoMaxima']
         self.minAcc = params['AceleracaoMinima']
+        self.Width = Width
+        self.Height = Height
         if Lane < 0:
             self.posX = Lane*90 + Width/2 + 15
             self.direction = 1
@@ -34,6 +36,7 @@ class Cars():
         self.placa = placa
         self.x0 = self.posX
         self.y0 = self.posY
+        self.trasintion = False
 
     def draw(self,screen):
         pygame.draw.rect(screen, self.color, pygame.Rect(self.posX,self.posY,self.lengthx,self.lengthy))
@@ -64,18 +67,33 @@ class Cars():
         elif self.acc < self.minAcc:
             self.acc = self.minAcc
         # if distance is more than Width delete car
-        if (self.posY - self.y0)**2 > 800**2:
+        if (self.posY - self.y0)**2 > 900**2:
             return True
         else:
             return False
 
     def changeLane(self):
-        if self.lane == params['sentido2Faixas'] - 1:
+        print("Carro troca",self.placa, self.lane)
+        if self.lane == params['sentido2Faixas'] - 1 or self.lane == - 1:
             self.lane -= 1
-        elif self.lane == - params['sentido1Faixas']:
+
+        elif self.lane == - params['sentido1Faixas'] or self.lane == 0:
             self.lane += 1
         else:
             self.lane += (- 1) ** np.random.randint(2)
+        print("Carro troca",self.placa, self.lane)
+        if self.lane < 0:
+            self.posX = self.lane*90 + self.Width/2 + 15
+            self.direction = 1
+            self.posY = -50
+        else:
+            self.posX = self.lane*90 + self.Width/2 + 15
+            self.direction = -1
+            self.posY = self.Height + 80
+
+    # def isTrasintion(self):
+        
+        
 
     def getData(self):
         return {self.placa:(self.posX,self.posY*12**0.5+self.km0)}
