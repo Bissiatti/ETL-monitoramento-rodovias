@@ -9,62 +9,38 @@
 
 using json = nlohmann::json;
 
-json lerArquivoSimula(std::string file_name)
-{
+json lerArquivoSimula(std::string rodovia, int i){
+
+    std::string file_number = "_" + std::to_string(i) + std::string(".txt");
+    std::string file_name = rodovia + file_number;
 
     std::ifstream file(file_name);
 
-    if (!file.is_open())
-    {
-        std::cout << "Não foi possível abrir o arquivo." << std::endl;
+    if (!file.is_open()) {
+    std::cout << "Não foi possível abrir o arquivo." << std::endl;
     }
 
     json j;
     file >> j;
+//    j = json::parse(file);
 
     return j;
 }
 
-void read_aggregate(std::vector<json> *hash_agg, std::vector<std::string> rodovias, int index)
-{
-    // Start by gathering the data from .txt file
+void read_aggregate(std::vector<json> * hash_agg, std::vector<std::string> rodovias, int index){
+        // Start by gathering the data from .txt file
     int file_number = 1;
     std::string rodovia = rodovias[index];
 
-    while (true)
-    {
-        // while(file_number < 2){
-        std::string file_name = rodovia + "_" + std::to_string(file_number) + std::string(".json");
+//    while(){ // Commented for checks and debugs
+    while(file_number < 2){
+    json json_file = lerArquivoSimula(rodovia, file_number);
 
-        // Fica constantemente varrendo pasta procurando
-        // por atualizações para a rodovia (verificar se a abordagem é adequada)
-        DIR *dir;
-        struct dirent *ent;
-        if ((dir = opendir(".")) != NULL)
-        {
-            while ((ent = readdir(dir)) != NULL)
-            {
-                if (ent->d_name == file_name)
-                {
-                    json json_file = lerArquivoSimula(file_name);
-                    if (file_number == 1)
-                    {
-                        (*hash_agg)[index] = json_file;
-                    }
-                    else
-                    {
-                        (*hash_agg)[index].update(json_file);
-                    }
-                    file_number++;
-                }
-            }
-            closedir(dir);
-        }
-        else
-        {
-            perror("Could not open directory");
-        }
+    (*hash_agg)[index] = json_file;
+
+    file_number++;
     }
+
 }
 
 double calc_speed(std::vector<json> *hash_agg,
