@@ -4,8 +4,10 @@
 #include <vector>
 #include <thread>
 #include <unistd.h>
+#include <chrono>
+#include <filesystem>
+#include <mutex>
 #include <nlohmann/json.hpp>
-#include <dirent.h>
 
 using json = nlohmann::json;
 
@@ -26,58 +28,55 @@ json lerArquivoSimula(std::string rodovia, int i){
         std::cout << "Não encontrado o arquivo " << file_name << std::endl;
         sleep(2);
     }
+
 }
 
-void read_aggregate(std::vector<json> * hash_agg, std::vector<std::string> rodovias, int index){
+void read_aggregate(std::vector<json> * hash_agg, std::vector<std::string> rodovias,
+                
+                int index,   std::vector<std::mutex> * mutexes){
+
         // Start by gathering the data from .txt file
     int file_number = 1;
     std::string rodovia = rodovias[index];
 
 //    while(){ // Commented for checks and debugs
-    while(file_number < 2){
+    while(file_number < 3){
     json json_file = lerArquivoSimula(rodovia, file_number);
 
-    (*hash_agg)[index] = json_file;
+        if (file_number == 1)
+                    {
+                        (*hash_agg)[index] = json_file;
+                    }
+                    else
+                    {
+                        (*mutexes)[index].lock();
+                        (*hash_agg)[index].update(json_file); // Impede a leitura do arquivo enquanto este for atualizado
+                        (*mutexes)[index].unlock();
+                    }
 
     file_number++;
     }
 
 }
 
-double calc_speed(std::vector<json> *hash_agg,
-                  int index, std::string placa)
-{
-//TODO: colocar os last_frames reais para teste
-std::vector<std::string> last_frames = {"29991", "30008"};
-json dados_rodovia = (*hash_agg)[index];
-json dados_frame_1 = dados_rodovia[last_frames[0]];
-json dados_frame_2 = dados_rodovia[last_frames[1]];
-double pos1[2];
-pos1[2] = dados_frame_1[placa];
-double pos2[2];
-pos2[2] = dados_frame_2[placa];
 
-//return std::sqrt(std::pow(pos2[0]-pos1[0], 2) +
-//std::pow(pos2[1]-pos[1], 2))/
-//(int(last_frames[1])-int(last_frames[0]))
-}
-
-int main()
-{
+int main() {
 
     int NUM_THREADS = 1;
 
-    // Lista dos nomes das rodovias
+    //Lista dos nomes das rodovias
     std::vector<std::string> rodovias;
     rodovias.push_back("BR-040");
 
-    // Criado o que contará com os dados agregados
+    //Criado o que contará com os dados agregados
     std::vector<json> hash_agg(NUM_THREADS);
     std::vector<std::thread> threads(NUM_THREADS);
+    std::vector<std::mutex> mutexes(NUM_THREADS); 
+    
+    // Um mutex diferente para cada rodovia -> Controlar acesso na escrita e nos cálculos
 
-    for (int l = 0; l < NUM_THREADS; l++)
-    {
-        threads[l] = std::thread(read_aggregate, &hash_agg, rodovias, l);
+    for (int l = 0; l < NUM_THREADS; l++) {
+              threads[l] = std::thread(read_aggregate, &hash_agg, rodovias, l, &mutexes);
     }
 
     threads[0].join();
