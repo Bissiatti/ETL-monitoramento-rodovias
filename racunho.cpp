@@ -14,17 +14,18 @@ json lerArquivoSimula(std::string rodovia, int i){
     std::string file_number = "_" + std::to_string(i) + std::string(".txt");
     std::string file_name = rodovia + file_number;
 
-    std::ifstream file(file_name);
+    while (true) {
+        std::ifstream file(file_name);
 
-    if (!file.is_open()) {
-    std::cout << "Não foi possível abrir o arquivo." << std::endl;
+        if (file.is_open()) {
+            json j;
+            file >> j;
+            return j;
+        }
+
+        std::cout << "Não encontrado o arquivo " << file_name << std::endl;
+        sleep(2);
     }
-
-    json j;
-    file >> j;
-//    j = json::parse(file);
-
-    return j;
 }
 
 void read_aggregate(std::vector<json> * hash_agg, std::vector<std::string> rodovias, int index){
