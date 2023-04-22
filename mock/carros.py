@@ -36,14 +36,14 @@ class Cars():
         self.placa = placa
         self.x0 = self.posX
         self.y0 = self.posY
-        self.trasintion = False
+        self.trasintion = True
+        self.timer = 0
+        self.trasintionTime = 20000
 
     def draw(self,screen):
         pygame.draw.rect(screen, self.color, pygame.Rect(self.posX,self.posY,self.lengthx,self.lengthy))
 
-    def update(self):
-        print(self.vel)
-        print(self.posX,self.posY)
+    def update(self,ms):
         if self.vel > self.maxSpeed:
             self.vel = self.maxSpeed
             self.posY += self.vel*self.direction
@@ -66,6 +66,10 @@ class Cars():
             self.acc = self.maxAcc
         elif self.acc < self.minAcc:
             self.acc = self.minAcc
+        if self.trasintion:
+            self.isTrasintion(ms)
+        if (self.posY - self.y0)**2 > 100**2:
+            self.trasintion = False
         # if distance is more than Width delete car
         if (self.posY - self.y0)**2 > 900**2:
             return True
@@ -73,26 +77,33 @@ class Cars():
             return False
 
     def changeLane(self):
-        print("Carro troca",self.placa, self.lane)
-        if self.lane == params['sentido2Faixas'] - 1 or self.lane == - 1:
-            self.lane -= 1
+        if self.trasintion:
+            print("Carro troca",self.placa, self.lane)
+            if self.lane == params['sentido2Faixas'] - 1 or self.lane == - 1:
+                self.lane -= 1
+            elif self.lane == - params['sentido1Faixas'] or self.lane == 0:
+                self.lane += 1
+            else:
+                self.lane += (- 1) ** np.random.randint(2)
+            print("Carro troca",self.placa, self.lane)
+            if self.lane < 0:
+                self.posX = self.lane*90 + self.Width/2 + 15
+                self.direction = 1
+                # self.posY = -50
+            else:
+                self.posX = self.lane*90 + self.Width/2 + 15
+                self.direction = -1
+                # self.posY = self.Height + 80
+            self.trasintion = True
 
-        elif self.lane == - params['sentido1Faixas'] or self.lane == 0:
-            self.lane += 1
-        else:
-            self.lane += (- 1) ** np.random.randint(2)
-        print("Carro troca",self.placa, self.lane)
-        if self.lane < 0:
-            self.posX = self.lane*90 + self.Width/2 + 15
-            self.direction = 1
-            self.posY = -50
-        else:
-            self.posX = self.lane*90 + self.Width/2 + 15
-            self.direction = -1
-            self.posY = self.Height + 80
-
-    # def isTrasintion(self):
-        
+    def isTrasintion(self,ms):
+        print(self.trasintion)
+        if self.trasintion:
+            self.timer += ms
+            print(self.timer)
+            if self.timer > self.trasintionTime:
+                self.trasintion = False
+                self.timer = 0
         
 
     def getData(self):

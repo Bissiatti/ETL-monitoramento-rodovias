@@ -11,6 +11,7 @@ params = json.load(open('parametros.json'))
 plate = json.loads(open('placas.json').read())
 
 path = "../data/"
+pathdt = '../delta-time/'
 
 pygame.init()
 
@@ -27,7 +28,7 @@ bg = (10, 130, 20)
 
 # frames por segundo
 
-fps = 60
+fps = 30
 
 # Relógio
 
@@ -48,7 +49,7 @@ colors = [(204, 204, 204),  # cinza claro
           (153, 204, 255),  # azul claro
           (255, 153, 255)]  # roxo claro
 
-cars.append(carros.Cars(np.random.randint(-2, 2),Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
+#cars.append(carros.Cars(np.random.randint(-2, 2),Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
 
 def draw():
     screen.fill(bg)
@@ -61,11 +62,13 @@ numberSaved = 0
 
 timer = 1000
 
-def update(timer,to_save):
+def update(timer,to_save,ms):
     isSaved = False
     for car in cars:
-        toDelete = car.update()
+        toDelete = car.update(ms)
         if toDelete:
+            p = car.placa
+            plate.append({'placa':p})
             cars.remove(car)
         to_save.append(car.getData())
     if timer <= 0:
@@ -86,29 +89,32 @@ while True:
     timer -= ms
     timerCreate -= ms
     if np.random.rand() < params['probabilidadeDeTrocaDeFaixa']:
-        print("troca")
         if len(cars) > 0:
             np.random.choice(cars).changeLane()
     if timerCreate <= 0:
         if np.random.rand() > params['probabilidadeDeEntradaDeVeiculo']:
             lane = np.random.randint(-params['sentido1Faixas'], params['sentido2Faixas'])
-            cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
+            pId = np.random.randint(0,len(plate))
+            p = plate[pId]['placa']
+            # remove p of plate dictionary
+            plate.pop(pId)
+            cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,10)],p))
         timerCreate = 1000
-    to_save_frame,isSaved = update(timer,to_save_frame)
+    to_save_frame,isSaved = update(timer,to_save_frame,ms)
     to_save[total_time] = to_save_frame
     
     if isSaved:
         to_save = json.dumps(to_save)
         # Serializing json
-        #Writing to sample.json
+        # Writing to sample.json
         with open(path + params['nomeRodovia'] + "_" + str(numberSaved) + ".json", "w") as outfile:
             outfile.write(to_save)
         numberSaved += 1
         timer = 5000
         to_save = {}
     # adiciona registro da ordem de leitura dos frames
-#    with open('frames_lidos_'+str(numberSaved)+'.txt', 'a') as fl:
-#        fl.write(str(total_time)+'\n')
+    with open(pathdt + params['nomeRodovia'] + "_" + str(numberSaved) + ".txt", 'a') as fl:
+       fl.write(str(total_time)+'\n')
     total_time += ms
     draw()
 

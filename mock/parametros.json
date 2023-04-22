@@ -9,7 +9,7 @@
     "velocidadeMinima": 2,
     "AceleracaoMaxima": 0.1,
     "AceleracaoMinima": 0.01,
-    "probabilidadeDeTrocaDeFaixa": 0.2,
+    "probabilidadeDeTrocaDeFaixa": 0.3,
     "probabilidadeColisao": 0.1,
     "tempoColisao": 5,
     "kilometroInicial": 100
