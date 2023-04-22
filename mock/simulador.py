@@ -10,25 +10,29 @@ params = json.load(open('parametros.json'))
 
 plate = json.loads(open('placas.json').read())
 
+interface_graph = params['interfaceGrafica']
+
 path = "../data/"
 pathdt = '../delta-time/'
 
-pygame.init()
+if interface_graph:
+    pygame.init()
 
 Width = 1280
 Height = 720
+if interface_graph:
+    screen = pygame.display.set_mode((Width, Height))
 
-screen = pygame.display.set_mode((Width, Height))
-
-pygame.display.set_caption("Simulador de tráfego")
+if interface_graph:
+    pygame.display.set_caption("Simulador de tráfego")
 
 # Cor de fundo
-
-bg = (10, 130, 20)
+if interface_graph:
+    bg = (10, 130, 20)
 
 # frames por segundo
 
-fps = 30
+fps = 60
 
 # Relógio
 
@@ -49,14 +53,15 @@ colors = [(204, 204, 204),  # cinza claro
           (153, 204, 255),  # azul claro
           (255, 153, 255)]  # roxo claro
 
-#cars.append(carros.Cars(np.random.randint(-2, 2),Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
+cars.append(carros.Cars(np.random.randint(-2, 2),Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
 
 def draw():
     screen.fill(bg)
     br101.draw(screen, Width, Height)
     for car in cars:
         car.draw(screen)
-    pygame.display.update()
+    if interface_graph:
+        pygame.display.update()
 
 numberSaved = 0
 
@@ -65,27 +70,32 @@ timer = 1000
 def update(timer,to_save,ms):
     isSaved = False
     for car in cars:
-        toDelete = car.update(ms)
+        toDelete = car.update(ms,params['tempoColisao'])
         if toDelete:
             p = car.placa
             plate.append({'placa':p})
             cars.remove(car)
         to_save.append(car.getData())
+        for car2 in cars:
+            if car != car2:
+                car.colision(car2,params['probabilidadeColisao'])
     if timer <= 0:
         isSaved = True
     return to_save,isSaved
 
 timer = 5000
-timerCreate = 300
+timerCreate0 = 100
+timerCreate = timerCreate0
 to_save = {}
 total_time = 0
 while True:
     ms = clock.tick(fps)
     to_save_frame = []
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            quit()
+    if interface_graph:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
     timer -= ms
     timerCreate -= ms
     if np.random.rand() < params['probabilidadeDeTrocaDeFaixa']:
@@ -99,7 +109,7 @@ while True:
             # remove p of plate dictionary
             plate.pop(pId)
             cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,10)],p))
-        timerCreate = 1000
+        timerCreate = timerCreate0
     to_save_frame,isSaved = update(timer,to_save_frame,ms)
     to_save[total_time] = to_save_frame
 
@@ -117,5 +127,6 @@ while True:
         timer = 5000
         to_save = {}
     total_time += ms
-    draw()
+    if interface_graph:
+        draw()
 
