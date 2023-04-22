@@ -102,6 +102,10 @@ while True:
         timerCreate = 1000
     to_save_frame,isSaved = update(timer,to_save_frame,ms)
     to_save[total_time] = to_save_frame
+
+    # adiciona registro da ordem de leitura dos frames
+    with open(pathdt + params['nomeRodovia'] + "_" + str(numberSaved) + ".txt", 'a') as fl:
+       fl.write(str(total_time)+'\n')
     
     if isSaved:
         to_save = json.dumps(to_save)
@@ -112,9 +116,6 @@ while True:
         numberSaved += 1
         timer = 5000
         to_save = {}
-    # adiciona registro da ordem de leitura dos frames
-    with open(pathdt + params['nomeRodovia'] + "_" + str(numberSaved) + ".txt", 'a') as fl:
-       fl.write(str(total_time)+'\n')
     total_time += ms
     draw()
 
