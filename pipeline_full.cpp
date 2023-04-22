@@ -31,7 +31,7 @@ json lerArquivoSimula(std::string rodovia, int i){
 
 }
 
-void read_aggregate(std::vector<json> * hash_agg, std::vector<std::string> rodovias,
+void read_aggregate(json * hash_agg, std::vector<std::string> rodovias,
                 
                 int index,   std::vector<std::mutex> * mutexes){
 
@@ -45,12 +45,12 @@ void read_aggregate(std::vector<json> * hash_agg, std::vector<std::string> rodov
 
         if (file_number == 1)
                     {
-                        (*hash_agg)[index] = json_file;
+                        (*hash_agg)[rodovia] = json_file;
                     }
                     else
                     {
                         (*mutexes)[index].lock();
-                        (*hash_agg)[index].update(json_file); // Impede a leitura do arquivo enquanto este for atualizado
+                        (*hash_agg)[rodovia].update(json_file); // Impede a leitura do arquivo enquanto este for atualizado
                         (*mutexes)[index].unlock();
                     }
 
@@ -69,7 +69,7 @@ int main() {
     rodovias.push_back("BR-040");
 
     //Criado o que contará com os dados agregados
-    std::vector<json> hash_agg(NUM_THREADS);
+    json hash_agg;
     std::vector<std::thread> threads(NUM_THREADS);
     std::vector<std::mutex> mutexes(NUM_THREADS); 
     
