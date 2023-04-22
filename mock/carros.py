@@ -105,11 +105,9 @@ class Cars():
                 if self.lane < 0:
                     self.posX = self.lane*90 + self.Width/2 + 15
                     self.direction = 1
-                    # self.posY = -50
                 else:
                     self.posX = self.lane*90 + self.Width/2 + 15
                     self.direction = -1
-                    # self.posY = self.Height + 80
         self.trasintion = True
 
     def isTrasintion(self,ms):
@@ -153,4 +151,4 @@ class Cars():
             self.vel = 1
 
     def getData(self):
-        return {self.placa:(self.posX,self.posY*12**0.5+self.km0)}
+        return self.placa,(self.posX,self.posY*12**0.5+self.km0)

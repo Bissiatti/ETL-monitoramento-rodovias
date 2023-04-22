@@ -75,7 +75,8 @@ def update(timer,to_save,ms):
             p = car.placa
             plate.append({'placa':p})
             cars.remove(car)
-        to_save.append(car.getData())
+        p, pos = car.getData()
+        to_save_frame[p] = pos
         for car2 in cars:
             if car != car2:
                 car.colision(car2,params['probabilidadeColisao'])
@@ -90,7 +91,7 @@ to_save = {}
 total_time = 0
 while True:
     ms = clock.tick(fps)
-    to_save_frame = []
+    to_save_frame = {}
     if interface_graph:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -118,6 +119,7 @@ while True:
        fl.write(str(total_time)+'\n')
     
     if isSaved:
+        print(to_save)
         to_save = json.dumps(to_save)
         # Serializing json
         # Writing to sample.json
