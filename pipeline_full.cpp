@@ -13,11 +13,11 @@ using json = nlohmann::json;
 
 json lerArquivoSimula(std::string rodovia, int i){
 
-    std::string file_number = "_" + std::to_string(i) + std::string(".txt");
-    std::string file_name = rodovia + file_number;
+    std::string file_name = rodovia + "_" + std::to_string(i);
+    std::string file_name_json = std::string("./data/") + file_name + std::string(".json");
 
     while (true) {
-        std::ifstream file(file_name);
+        std::ifstream file(file_name_json, std::ios::in);
 
         if (file.is_open()) {
             json j;
@@ -25,7 +25,7 @@ json lerArquivoSimula(std::string rodovia, int i){
             return j;
         }
 
-        std::cout << "Não encontrado o arquivo " << file_name << std::endl;
+        std::cout << "Não encontrado o arquivo " << file_name_json << std::endl;
         sleep(1);
     }
 
@@ -33,18 +33,18 @@ json lerArquivoSimula(std::string rodovia, int i){
 
 std::vector<int> lerArquivoIndices(std::string rodovia, int i){
 
-    std::string file_number = "_" + std::to_string(i) + std::string(".txt");
-    std::string file_name = rodovia + "_ind" + file_number;
+    std::string file_name = rodovia + "_" + std::to_string(i);
+    std::string file_name_txt = std::string("./delta-time/") + file_name + std::string(".txt");
     
     while (true) {
-        std::ifstream file(file_name);
+        std::ifstream file(file_name_txt, std::ios::in);
 
         if (file.is_open()) {
             std::vector<int> numbers{ std::istream_iterator<int>(file), std::istream_iterator<int>() };
             return numbers;
         }
 
-        std::cout << "Não encontrado o arquivo " << file_name << std::endl;
+        std::cout << "Não encontrado o arquivo " << file_name_txt << std::endl;
         sleep(1);
     }
 
@@ -110,6 +110,10 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
     int contador = 0;
 
     double frame_num = 0;
+	
+	// número de frames no qual consideraremos como risco de colisão
+	// caso seja previsto que os carros batam após esse número de frames
+	int frame_tolerancia_colisao = 1;
 
     while (true){
 
@@ -150,9 +154,13 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 
                 // Posição ---------------
                 (*rodovia_frame_agg)[rodovia][frame][placa]["Posicao"] = carro.value();
-
+				double pos_prevista;
+				//s = s_0
+				pos_prevista = inner_hash[frame][ placa ][ 1 ];
+				
                 // Velocidade ---------------
                 if ( (*rodovia_frame_agg)[rodovia][ultimo_frame_str].contains(placa) ){
+				
                 double t_1 = inner_hash[frame][ placa ][ 1 ]; // Estaremos olhando apenas para o valor Y do eixo
 
                 double t_0 = inner_hash[ultimo_frame_str][ placa ][ 1 ]; 
@@ -160,56 +168,78 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
                 double diff_frame = frame_num - ultimo_frame;
 
                 (*rodovia_frame_agg)[rodovia][frame][placa]["Velocidade"] = std::abs(t_1 - t_0) / diff_frame ;
+				
+				double vel_1 = (*rodovia_frame_agg)[rodovia][frame][placa]["Velocidade"];; // Estaremos olhando apenas para o valor Y do eixo
+				
+				//s = s_0 +v*t
+				pos_prevista = t_1 + vel_1*diff_frame*frame_tolerancia_colisao;
                 }
 
                 // Aceleração ---------------
                 if ( (*rodovia_frame_agg)[rodovia][ultimo_frame_str][placa].contains("Velocidade") ){
-                double vel_1 = (*rodovia_frame_agg)[rodovia][frame][placa]["Velocidade"];; // Estaremos olhando apenas para o valor Y do eixo
 
+                double t_1 = inner_hash[frame][ placa ][ 1 ];
+
+				double vel_1 = (*rodovia_frame_agg)[rodovia][frame][placa]["Velocidade"];; // Estaremos olhando apenas para o valor Y do eixo
+				
                 double vel_0 = (*rodovia_frame_agg)[rodovia][ultimo_frame_str][placa]["Velocidade"]; 
 
                 double diff_frame = frame_num - ultimo_frame;
 
                 (*rodovia_frame_agg)[rodovia][frame][placa]["Aceleração"] = (vel_1 - vel_0) / diff_frame ;
-                } 
+                
+				double acel_1 = (*rodovia_frame_agg)[rodovia][frame][placa]["Aceleração"];
+				
+				// s = s_0 + v_0*t + a*t²/2
+				double delta_t = diff_frame*frame_tolerancia_colisao;
+				pos_prevista = t_1 + vel_1*delta_t + acel_1*std::pow(delta_t, 2)/2;
+				}
+				
+				(*rodovia_frame_agg)[rodovia][frame][placa]["Posição Prevista"] = pos_prevista;
 
+				std::vector<std::string> riscos;
+				
+				(*rodovia_frame_agg)[rodovia][frame][placa]["Risco Colisão"] = riscos;}
                 // Acidente ---------------
             for(auto carro = inner_hash[  frame ].begin(); carro != inner_hash[  frame ].end(); ++carro){
-                for(auto carro2 = inner_hash[  frame ].begin(); carro2 != inner_hash[  frame ].end(); ++carro2){
+                
+				for(auto carro2 = inner_hash[  frame ].begin(); carro2 != inner_hash[  frame ].end(); ++carro2){
                     if (carro.key() == carro2.key()){ continue; }
-                    
+                    //checa se após o dado número de frames um carro ultrapassará o outro (assim, colidindo)
                     if( carro.value()[0] == carro2.value()[0]){
-                      
-                        // De que forma decidimos se haverá ou não acidente?
-
-
-                        }
-
+							double pos = carro.value()[0];
+							double pos2 = carro2.value()[0];
+							std::string placa = carro.key();
+							double pos_prevista = (*rodovia_frame_agg)[rodovia][frame][placa]["Posição Prevista"];
+							std::string placa2 = carro2.key();
+							double pos_prevista2 = (*rodovia_frame_agg)[rodovia][frame][placa2]["Posição Prevista"];
+							if ((pos > pos2 and pos_prevista < pos_prevista2)
+							or (pos < pos2 and pos_prevista > pos_prevista2)){
+								((*rodovia_frame_agg)[rodovia][frame][placa]["Risco Colisão"]).push_back(placa2);								
+						}
                     }
 
                 }
 
             }
-
-            ultimo_frame = frame_num;
+			ultimo_frame = frame_num;
             ultimo_index = frame_index;
-        }
-
+            }
 
         if( !waiting){
         std::string filename_output = rodovia + std::string("_output_") + std::to_string(contador) + std::string(".txt");
 
         std::ofstream file(filename_output);
+
         file << (*rodovia_frame_agg)[rodovia];
+
         file.close();
+
         std::cout << "arquivo " << filename_output <<  " salvo" << std::endl;
-        contador++;
-            
+
+        contador++;           
         }
-        
-        sleep(1.5);
-    }
-}
+		sleep(1.5);}}
 
 int main() {
 
@@ -218,7 +248,7 @@ int main() {
     //Lista dos nomes das rodovias
     std::vector<std::string> rodovias;
 
-    rodovias.push_back("BR-101");
+    rodovias.push_back("BR-040");
 
     //Criado o que contará com os dados agregados
     json hash_agg;
