@@ -115,7 +115,7 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 	
 	// número de frames no qual consideraremos como risco de colisão
 	// caso seja previsto que os carros batam após esse número de frames
-	int frame_tolerancia_colisao = 100;
+	int frame_tolerancia_colisao = 60;
 
     while (true){
 
@@ -222,13 +222,14 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 							or (pos < pos2 and pos_prevista > pos_prevista2)
 							or (std::abs(pos-pos2) <= (*parametros)[rodovia]["tamanhoCarro"])
 							or (std::abs(pos_prevista-pos_prevista2) <= (*parametros)[rodovia]["tamanhoCarro"])){
-								std::cout << frame << " " << placa << std::endl;
-								(rodovia_frame_agg[rodovia][frame][placa]["Risco Colisão"]).push_back(placa2);							
+								(rodovia_frame_agg[rodovia][frame][placa]["Risco Colisão"]).push_back(placa2);
+								if ( rodovia_frame_agg[rodovia][frame][placa].contains("Velocidade")
+								 and rodovia_frame_agg[rodovia][frame][placa]["Velocidade"] == 0){
+									 rodovia_frame_agg[rodovia][frame][placa]["Batido"] = true;
+								 }
 						}
                     }
-
                 }
-
             }
 			ultimo_frame = frame_num;
             ultimo_index = frame_index;
