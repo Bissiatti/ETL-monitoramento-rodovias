@@ -5,6 +5,14 @@
 
 using namespace std;
 
+struct Veicle
+{
+    string plate_code;
+    string name;
+    string year;
+    string model;
+};
+
 class API 
 {
     public:
@@ -66,8 +74,8 @@ public:
         }
     }
 
-    vector<string> search(){
-        vector<string> result;
+    Veicle search(){
+        Veicle result;
         while (!this->queue.empty()){
             string plate_code = this->queue.front();
             this->queue.pop();
@@ -78,10 +86,11 @@ public:
             string year = api.get_year();
             string model = api.get_model();
 
-            result.push_back(plate_code);
-            result.push_back(name);
-            result.push_back(year);
-            result.push_back(model);
+            result.plate_code = plate_code;
+            result.name = name;
+            result.year = year;
+            result.model = model;
+
         }
         return result;
     }
@@ -106,17 +115,10 @@ int main(int argc, char const *argv[])
     apiQueue.push("SUR2K34");
     apiQueue.push("COL3H45");
 
-    vector<string> result = apiQueue.search();
-    for (int i = 0; i < result.size(); i++)
-    {
-        cout << result[i] << endl;
-    }
+    Veicle veicle = apiQueue.search();
 
-    result = apiQueue.search();
-
-    for (int i = 0; i < result.size(); i++)
-    {
-        cout << result[i] << endl;
-    }
-    return 0;
+    cout << veicle.plate_code << endl;
+    cout << veicle.name << endl;
+    cout << veicle.year << endl;
+    cout << veicle.model << endl;
 }
