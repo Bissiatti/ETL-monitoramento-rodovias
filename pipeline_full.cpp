@@ -255,7 +255,7 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 
 int main() {
 
-    int NUM_THREADS = 2;
+    int NUM_THREADS = 0;
 
     //Lista dos nomes das rodovias
     std::vector<std::string> rodovias;
@@ -272,6 +272,7 @@ int main() {
 	
 	  for (auto& parametros_rodovia : parametros.items()) {
         rodovias.push_back(parametros_rodovia.key());
+        NUM_THREADS++;
   }
 
 
