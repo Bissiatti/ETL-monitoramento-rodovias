@@ -48,12 +48,7 @@ class Cars():
 
     def update(self,ms,timeColision):
         if not self.crash and not self.tryNotCrash:
-            if self.vel > self.maxSpeed:
-                self.vel = self.maxSpeed
-                self.posY += self.vel*self.direction
-                self.vel += self.acc*self.direction
-                self.acc += 0.1*self.direction
-            elif self.vel < self.minSpeed:
+            if self.vel < self.minSpeed:
                 if self.crash:
                     self.posY += self.vel*self.direction
                     self.vel -= self.dec*self.direction
@@ -151,4 +146,4 @@ class Cars():
             self.vel = 1
 
     def getData(self):
-        return self.placa,(self.posX,self.posY*12**0.5+self.km0)
+        return self.placa,(self.posX,self.posY*2,+self.km0)
