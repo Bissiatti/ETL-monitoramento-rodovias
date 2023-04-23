@@ -2,7 +2,6 @@ import pygame
 import json
 import numpy as np
 
-
 # class RoadConstants():
 #     def __init__(self):
 
@@ -145,5 +144,7 @@ class Cars():
         elif self.vel < 0:
             self.vel = 1
 
+    def getData(self):
+        return self.placa,(self.posX,self.posY+self.km0)
     def getData(self):
         return self.placa,(self.posX,self.posY+self.km0)
