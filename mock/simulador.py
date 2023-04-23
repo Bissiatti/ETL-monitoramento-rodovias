@@ -3,10 +3,21 @@ import json
 import pistas
 import carros
 import numpy as np
+import datetime
 
 br101 = pistas.Road()
 
 params = json.load(open('parametros.json'))
+
+# select a random road on params
+
+keys = params.keys()
+
+key = np.random.choice(list(keys))
+
+params = params[key]
+
+print(params.keys())
 
 plate = json.loads(open('placas.json').read())
 
@@ -53,7 +64,7 @@ colors = [(204, 204, 204),  # cinza claro
           (153, 204, 255),  # azul claro
           (255, 153, 255)]  # roxo claro
 
-cars.append(carros.Cars(np.random.randint(-2, 2),Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa']))
+cars.append(carros.Cars(np.random.randint(-2, 2),Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa'],params))
 
 def draw():
     screen.fill(bg)
@@ -110,7 +121,7 @@ while True:
             p = plate[pId]['placa']
             # remove p of plate dictionary
             plate.pop(pId)
-            cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,10)],p))
+            cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,10)],p,params))
         timerCreate = timerCreate0
     to_save_frame,isSaved = update(timer,to_save_frame,ms)
     to_save[total_time] = to_save_frame
@@ -120,14 +131,16 @@ while True:
         to_save = json.dumps(to_save)
         # Serializing json
         # Writing to sample.json
-        with open(path + params['nomeRodovia'] + "_" + str(numberSaved) + ".json", "w") as outfile:
+        with open(path + key + "_" + str(numberSaved) + ".json", "w") as outfile:
             outfile.write(to_save)
-        numberSaved += 1
         timer = 5000
         to_save = {}
         # adiciona registro da ordem de leitura dos frames
-        with open(pathdt + params['nomeRodovia'] + "_" + str(numberSaved) + ".txt", 'a') as fl:
-            fl.write(saveTime)
+        with open(pathdt + key + "_" + str(numberSaved) + ".txt", 'a') as fl:
+            print(str(datetime.datetime.now()))
+            fl.write(str(datetime.datetime.now()) + "\n" + saveTime)
+        saveTime = ''
+        numberSaved += 1
     total_time += ms
     if interface_graph:
         draw()

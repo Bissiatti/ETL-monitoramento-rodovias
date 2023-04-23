@@ -2,14 +2,13 @@ import pygame
 import json
 import numpy as np
 
-params = json.load(open('parametros.json'))
-
 # class RoadConstants():
 #     def __init__(self):
 
 
 class Cars():
-    def __init__(self,Lane,Width,Height,km0,color,placa):
+    def __init__(self,Lane,Width,Height,km0,color,placa,params):
+        self.params = params
         self.maxSpeed = params['velocidadeMaxima']
         self.minSpeed = params['velocidadeMinima']
         self.maxAcc = params['AceleracaoMaxima']
@@ -29,7 +28,7 @@ class Cars():
         self.acc = 0
         self.dec = 0
         self.lengthX = 50
-        self.lengthY = 74
+        self.lengthY = params['tamanhoCarro']
         self.km0 = km0
         self.color = color
         self.crash = False
@@ -91,9 +90,9 @@ class Cars():
     def changeLane(self):
         if not self.crash:
             if self.trasintion:
-                if self.lane == params['sentido2Faixas'] - 1 or self.lane == - 1:
+                if self.lane == self.params['sentido2Faixas'] - 1 or self.lane == - 1:
                     self.lane -= 1
-                elif self.lane == - params['sentido1Faixas'] or self.lane == 0:
+                elif self.lane == - self.params['sentido1Faixas'] or self.lane == 0:
                     self.lane += 1
                 else:
                     self.lane += (- 1) ** np.random.randint(2)
@@ -146,4 +145,6 @@ class Cars():
             self.vel = 1
 
     def getData(self):
-        return self.placa,(self.posX,self.posY*2,+self.km0)
+        return self.placa,(self.posX,self.posY+self.km0)
+    def getData(self):
+        return self.placa,(self.posX,self.posY+self.km0)
