@@ -97,7 +97,7 @@ void read_aggregate(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 
 void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_indexes, json * rodovia_frame_agg,
                     std::vector<std::string> rodovias, int index,
-                    std::vector<std::mutex> * mutexes){
+                    std::vector<std::mutex> * mutexes, json * parametros){
 
     std::string rodovia = rodovias[index];
 
@@ -170,7 +170,8 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
                 (*rodovia_frame_agg)[rodovia][frame][placa]["Velocidade"] = std::abs(t_1 - t_0) / diff_frame ;
 				
 				double vel_1 = (*rodovia_frame_agg)[rodovia][frame][placa]["Velocidade"];; // Estaremos olhando apenas para o valor Y do eixo
-				
+				bool acima_da_vel = (vel_1 > (*parametros)[rodovia]["velocidadeMaxima"]);
+				(*rodovia_frame_agg)[rodovia][frame][placa]["Acima da Velocidade"] = acima_da_vel; 
 				//s = s_0 +v*t
 				pos_prevista = t_1 + vel_1*diff_frame*frame_tolerancia_colisao;
                 }
@@ -248,7 +249,20 @@ int main() {
     //Lista dos nomes das rodovias
     std::vector<std::string> rodovias;
 
-    rodovias.push_back("BR-040");
+    //Carregando dados de parametros
+	json parametros;
+    std::string parameters_json = std::string("./mock/parametros.json");
+	std::ifstream file_parameters_json(parameters_json, std::ios::in);
+    if (file_parameters_json.is_open()) {
+            file_parameters_json >> parametros;
+        }else{
+            std::cout << "Não encontrado o arquivo " << parameters_json << std::endl;
+        }
+	
+	  for (auto& parametros_rodovia : parametros.items()) {
+        rodovias.push_back(parametros_rodovia.key());
+  }
+
 
     //Criado o que contará com os dados agregados
     json hash_agg;
@@ -275,7 +289,7 @@ int main() {
 
 
     for (int l = 0; l < NUM_THREADS; l++) {
-              threads_calculations[l] = std::thread(calcula_carros, &hash_agg, &frames_indexes, &rodovia_frame_agg, rodovias, l, &mutexes);
+              threads_calculations[l] = std::thread(calcula_carros, &hash_agg, &frames_indexes, &rodovia_frame_agg, rodovias, l, &mutexes, &parametros);
     }
     
 
