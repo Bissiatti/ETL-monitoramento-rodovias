@@ -115,7 +115,7 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 	
 	// número de frames no qual consideraremos como risco de colisão
 	// caso seja previsto que os carros batam após esse número de frames
-	int frame_tolerancia_colisao = 1;
+	int frame_tolerancia_colisao = 60;
 
     while (true){
 
@@ -212,20 +212,24 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
                     if (carro.key() == carro2.key()){ continue; }
                     //checa se após o dado número de frames um carro ultrapassará o outro (assim, colidindo)
                     if( carro.value()[0] == carro2.value()[0]){
-							double pos = carro.value()[0];
-							double pos2 = carro2.value()[0];
+							double pos = carro.value()[1];
+							double pos2 = carro2.value()[1];
 							std::string placa = carro.key();
 							double pos_prevista = rodovia_frame_agg[rodovia][frame][placa]["Posição Prevista"];
 							std::string placa2 = carro2.key();
 							double pos_prevista2 = rodovia_frame_agg[rodovia][frame][placa2]["Posição Prevista"];
 							if ((pos > pos2 and pos_prevista < pos_prevista2)
-							or (pos < pos2 and pos_prevista > pos_prevista2)){
-								(rodovia_frame_agg[rodovia][frame][placa]["Risco Colisão"]).push_back(placa2);								
+							or (pos < pos2 and pos_prevista > pos_prevista2)
+							or (std::abs(pos-pos2) <= (*parametros)[rodovia]["tamanhoCarro"])
+							or (std::abs(pos_prevista-pos_prevista2) <= (*parametros)[rodovia]["tamanhoCarro"])){
+								(rodovia_frame_agg[rodovia][frame][placa]["Risco Colisão"]).push_back(placa2);
+								if ( rodovia_frame_agg[rodovia][frame][placa].contains("Velocidade")
+								 and rodovia_frame_agg[rodovia][frame][placa]["Velocidade"] == 0){
+									 rodovia_frame_agg[rodovia][frame][placa]["Batido"] = true;
+								 }
 						}
                     }
-
                 }
-
             }
 			ultimo_frame = frame_num;
             ultimo_index = frame_index;
