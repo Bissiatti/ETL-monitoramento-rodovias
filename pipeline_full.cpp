@@ -173,37 +173,42 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
                 (*rodovia_frame_agg)[rodovia][frame][placa]["Aceleração"] = (vel_1 - vel_0) / diff_frame ;
                 } 
 
+                // Acidente ---------------
+            for(auto carro = inner_hash[  frame ].begin(); carro != inner_hash[  frame ].end(); ++carro){
+                for(auto carro2 = inner_hash[  frame ].begin(); carro2 != inner_hash[  frame ].end(); ++carro2){
+                    if (carro.key() == carro2.key()){ continue; }
+                    
+                    if( carro.value()[0] == carro2.value()[0]){
+                      
+                        // De que forma decidimos se haverá ou não acidente?
 
+
+                        }
+
+                    }
+
+                }
 
             }
 
-            // FAZER AQUI A QUESTÃO DO CÁLCULO + ACIDENTE AQUI
-
             ultimo_frame = frame_num;
-
             ultimo_index = frame_index;
-
         }
 
 
         if( !waiting){
-        
         std::string filename_output = rodovia + std::string("_output_") + std::to_string(contador) + std::string(".txt");
 
         std::ofstream file(filename_output);
         file << (*rodovia_frame_agg)[rodovia];
         file.close();
-
         std::cout << "arquivo " << filename_output <<  " salvo" << std::endl;
-
         contador++;
+            
         }
-
+        
         sleep(1.5);
-
     }
-
-
 }
 
 int main() {
