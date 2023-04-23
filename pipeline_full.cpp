@@ -26,7 +26,7 @@ json lerArquivoSimula(std::string rodovia, int i){
         }
 
         std::cout << "Não encontrado o arquivo " << file_name << std::endl;
-        sleep(2);
+        sleep(1);
     }
 
 }
@@ -45,7 +45,7 @@ std::vector<int> lerArquivoIndices(std::string rodovia, int i){
         }
 
         std::cout << "Não encontrado o arquivo " << file_name << std::endl;
-        sleep(2);
+        sleep(1);
     }
 
 }
@@ -57,8 +57,8 @@ void read_aggregate(json * hash_agg, std::vector<std::vector<int>> * frames_inde
     int file_number = 0;
     std::string rodovia = rodovias[index];
 
-//    while(){ // Commented for checks and debugs
-    while(file_number < 2){
+//    while( file_number < 3){ // Commented for checks and debugs
+    while( true ){
     json json_file = lerArquivoSimula(rodovia, file_number);
     std::vector<int> new_indexes = lerArquivoIndices(rodovia, file_number);
 
@@ -87,40 +87,122 @@ void read_aggregate(json * hash_agg, std::vector<std::vector<int>> * frames_inde
                         (*mutexes)[index].unlock();
                     }
 
+    //sleep(1); 
+
     file_number++;
     }
 
 }
 
 
-void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_indexes,
+void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_indexes, json * rodovia_frame_agg,
                     std::vector<std::string> rodovias, int index,
                     std::vector<std::mutex> * mutexes){
 
     std::string rodovia = rodovias[index];
-    
-    (*mutexes)[index].lock(); 
 
-    std::vector<int> frames_inds = (*frames_indexes)[index];
-    json inner_hash = (*hash_agg)[rodovia];                 //Como controlar o tamanho do que é pego para ser calculado?
+    (*rodovia_frame_agg)[rodovia] = json {};
 
-    (*mutexes)[index].unlock();
+    int ultimo_index = 0; // inicializamos esta variável que ajudará a iterar
 
-     for (auto j = 0; j != frames_inds.size() ; j++ ){                   //itera pelos frames
+    int ultimo_frame = 0;
 
-        std::string frame = std::to_string( frames_inds[j] );
-        
-        for(auto k = 0; k != inner_hash[  frame ].size() ; k++ ){       //itera pela lista dicionário de carros
+    int contador = 0;
 
-            for(auto carro = inner_hash[  frame ][k].begin() ; carro != inner_hash[  frame ][k].end() ; ++carro ){   // itera pelos carros
+    double frame_num = 0;
 
-            std::cout << carro.key() << std::endl;
+    while (true){
+
+        int waiting = 1; // contador que fará com que não seja salvo arquivos do output das iterações
+
+        (*mutexes)[index].lock(); 
+
+            std::vector<int> frames_inds = (*frames_indexes)[index];
+            json inner_hash = (*hash_agg)[rodovia];                 //Como controlar o tamanho do que é pego para ser calculado?
+
+        (*mutexes)[index].unlock();
+
+/*         for (auto j = 0; j < frames_inds.size(); j++){
+        std::cout << "frames_indexes de dentro do calculas_carros " << j << " " << frames_inds[j] << std::endl; 
+        } */
+
+// ---------- Iterações pelos frames ----------------
+        for (auto frame_index = ultimo_index+1; frame_index < frames_inds.size() ; frame_index++ ){
+                        // Começamos pulando o primeiro que não terá dados interessantes
+
+            waiting = 0; // Se entrou no for, é por que não esta mais esperando e há mais coisas para iterar
+
+            std::string frame = std::to_string( frames_inds[frame_index] );
+            std::string ultimo_frame_str = std::to_string( ultimo_frame );
+
+            frame_num = frames_inds[frame_index];
+
+            (*rodovia_frame_agg)[rodovia][frame] = json {};
+
+// ---------- Iterações pelos carros ----------------
+            for (auto carro = inner_hash[  frame ].begin(); carro != inner_hash[  frame ].end(); ++carro){
+                
+                std::string placa = carro.key();
+
+                (*rodovia_frame_agg)[rodovia][frame][placa] = json {};
+
+                //// --------------- Cálculos de cada carro 
+
+                // Posição ---------------
+                (*rodovia_frame_agg)[rodovia][frame][placa]["Posicao"] = carro.value();
+
+                // Velocidade ---------------
+                if ( (*rodovia_frame_agg)[rodovia][ultimo_frame_str].contains(placa) ){
+                double t_1 = inner_hash[frame][ placa ][ 1 ]; // Estaremos olhando apenas para o valor Y do eixo
+
+                double t_0 = inner_hash[ultimo_frame_str][ placa ][ 1 ]; 
+
+                double diff_frame = frame_num - ultimo_frame;
+
+                (*rodovia_frame_agg)[rodovia][frame][placa]["Velocidade"] = std::abs(t_1 - t_0) / diff_frame ;
+                }
+
+                // Aceleração ---------------
+                if ( (*rodovia_frame_agg)[rodovia][ultimo_frame_str][placa].contains("Velocidade") ){
+                double vel_1 = (*rodovia_frame_agg)[rodovia][frame][placa]["Velocidade"];; // Estaremos olhando apenas para o valor Y do eixo
+
+                double vel_0 = (*rodovia_frame_agg)[rodovia][ultimo_frame_str][placa]["Velocidade"]; 
+
+                double diff_frame = frame_num - ultimo_frame;
+
+                (*rodovia_frame_agg)[rodovia][frame][placa]["Aceleração"] = (vel_1 - vel_0) / diff_frame ;
+                } 
+
+
 
             }
 
+            // FAZER AQUI A QUESTÃO DO CÁLCULO + ACIDENTE AQUI
+
+            ultimo_frame = frame_num;
+
+            ultimo_index = frame_index;
+
         }
 
-     }
+
+        if( !waiting){
+        
+        std::string filename_output = rodovia + std::string("_output_") + std::to_string(contador) + std::string(".txt");
+
+        std::ofstream file(filename_output);
+        file << (*rodovia_frame_agg)[rodovia];
+        file.close();
+
+        std::cout << "arquivo " << filename_output <<  " salvo" << std::endl;
+
+        contador++;
+        }
+
+        sleep(1.5);
+
+    }
+
 
 }
 
@@ -130,7 +212,8 @@ int main() {
 
     //Lista dos nomes das rodovias
     std::vector<std::string> rodovias;
-    rodovias.push_back("BR-040");
+
+    rodovias.push_back("BR-101");
 
     //Criado o que contará com os dados agregados
     json hash_agg;
@@ -144,17 +227,25 @@ int main() {
     
     // Um mutex diferente para cada rodovia -> Controlar acesso na escrita e nos cálculos
 
+   // inicializa o JSON de cálculos
+    for (int l = 0; l < NUM_THREADS; l++) {
+              rodovia_frame_agg[ rodovias[l] ] = json {}; // rodovias_dict
+
+    }
+
+
     for (int l = 0; l < NUM_THREADS; l++) {
               threads_files[l] = std::thread(read_aggregate, &hash_agg, &frames_indexes, rodovias, l, &mutexes);
     }
 
-    threads_files[0].join();
 
     for (int l = 0; l < NUM_THREADS; l++) {
-              threads_calculations[l] = std::thread(calcula_carros, &hash_agg, &frames_indexes, rodovias, l, &mutexes);
+              threads_calculations[l] = std::thread(calcula_carros, &hash_agg, &frames_indexes, &rodovia_frame_agg, rodovias, l, &mutexes);
     }
     
-    threads_calculations[0].join();
+
+    sleep(15); // sleep simples para testes
+
 
     return 0;
 }
