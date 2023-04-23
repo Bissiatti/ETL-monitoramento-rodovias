@@ -13,6 +13,24 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 100,
-    "interfaceGrafica": true
+    "interfaceGrafica": true,
+	"tamanhoCarro": 74
+	},
+    "BR-039":{
+    "sentido1Name": "Brasilia",
+    "sentido2Name": "Rio de Janeiro",
+    "sentido1Faixas": 3,
+    "sentido2Faixas": 3,
+    "probabilidadeDeEntradaDeVeiculo": 0.9,
+    "velocidadeMaxima": 10,
+    "velocidadeMinima": 2,
+    "AceleracaoMaxima": 0.1,
+    "AceleracaoMinima": 0.01,
+    "probabilidadeDeTrocaDeFaixa": 0.3,
+    "probabilidadeColisao": 0.1,
+    "tempoColisao": 3000,
+    "kilometroInicial": 100,
+    "interfaceGrafica": true,
+	"tamanhoCarro": 74
 	}
 }
