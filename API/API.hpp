@@ -79,8 +79,6 @@ public:
         nlohmann::json result = nlohmann::json {};
             string plate_code = this->queue.front();
 
-            cout << plate_code << endl; // comentar aqui?
-
             API api;
             api.query_veicle(plate_code);
             string name = api.get_name();
