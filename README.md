@@ -12,8 +12,9 @@
 Para executar o simulador, basta executar o arquivo `simulador.py` a partir da raiz do projeto com o comando:
 
 ```bash
-python mock/simulador.py
+python mock/simulador.py nome-da-rodovia
 ```
+Observação: a rodovia precisa existir nos arquivos de configuração do simulador, que estão na pasta `mock/parametros.json`.
 
 ## ETL
 
@@ -60,3 +61,12 @@ npm start
 ```
 
 5. Acessar o dashboard em `http://localhost:3000`
+
+## Resumo da execução
+
+1. Execute o simulador, em seguida execute o ETL e por fim o dashboard com o comando:
+
+```bash
+python mock/simulador.py BR-040 && g++ main.cpp -o main && ./main && cd dash && npm start
+```
+E abra o dashboard em `http://localhost:3000`, a cada 5 segundos o dashboard será atualizado com os dados do ETL. 
