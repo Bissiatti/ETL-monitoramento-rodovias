@@ -105,7 +105,7 @@ void read_aggregate(json * hash_agg, std::vector<std::vector<int>> * frames_inde
                         (*mutexes)[index].unlock();
                     }
 
-    sleep(1); // Para não deixar o processo muito rápido
+    sleep(2.5); // Para não deixar o processo muito rápido
 
     file_number++;
     }
@@ -342,7 +342,7 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 
         rodovia_frame_agg["api"] = json {};
         }
-		sleep(0.5);
+		sleep(0.75);
         
     }   
 }
