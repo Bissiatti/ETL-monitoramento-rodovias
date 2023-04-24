@@ -1,4 +1,6 @@
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -31,17 +33,34 @@ json lerArquivoSimula(std::string rodovia, int i){
 
 }
 
-std::vector<int> lerArquivoIndices(std::string rodovia, int i){
+std::vector<int> lerArquivoIndices(std::string rodovia, int i, json * batches_adm){
 
     std::string file_name = rodovia + "_" + std::to_string(i);
     std::string file_name_txt = std::string("./delta-time/") + file_name + std::string(".txt");
     
     while (true) {
-        std::ifstream file(file_name_txt, std::ios::in);
+		std::ifstream file(file_name_txt, std::ios::in);		
+        
+		if (file.is_open()) {
 
-        if (file.is_open()) {
+		
+			std::string str_time;
+			file >> str_time;
+		
+			std::string str_time2;
+			file >> str_time2;
+		
+			str_time = str_time + " " + str_time2;
+
+			(*batches_adm)[rodovia][std::to_string(i)]["start"] = str_time;
             std::vector<int> numbers{ std::istream_iterator<int>(file), std::istream_iterator<int>() };
-            return numbers;
+			
+			int primeiro = numbers.front();
+			(*batches_adm)[rodovia][std::to_string(i)]["Primeiro Frame"] = std::to_string(primeiro);
+			int ultimo = numbers.back();
+			(*batches_adm)[rodovia][std::to_string(i)]["Ultimo Frame"] = std::to_string(ultimo);
+			
+			return numbers;
         }
 
         std::cout << "Não encontrado o arquivo " << file_name_txt << std::endl;
@@ -51,7 +70,8 @@ std::vector<int> lerArquivoIndices(std::string rodovia, int i){
 }
 
 void read_aggregate(json * hash_agg, std::vector<std::vector<int>> * frames_indexes,
-                    std::vector<std::string> rodovias, int index,   std::vector<std::mutex> * mutexes){
+                    std::vector<std::string> rodovias, int index,   std::vector<std::mutex> * mutexes,
+					json * batches_adm){
 
         // Start by gathering the data from .txt file
     int file_number = 0;
@@ -60,7 +80,7 @@ void read_aggregate(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 //    while( file_number < 3){ // Commented for checks and debugs
     while( true ){
     json json_file = lerArquivoSimula(rodovia, file_number);
-    std::vector<int> new_indexes = lerArquivoIndices(rodovia, file_number);
+    std::vector<int> new_indexes = lerArquivoIndices(rodovia, file_number, batches_adm);
 
         if (file_number == 0)
                     {
@@ -94,10 +114,33 @@ void read_aggregate(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 
 }
 
+// Função que pega o batch de um frame
+std::string getBatch(std::string rodovia,
+					  std::string frame,
+					  json * batches_adm){
+					int frame_int = std::stoi(frame);
+					json inner_batch = (*batches_adm)[rodovia];
+					int ultimo_batch = (*batches_adm)[rodovia]["Ultimo"];
 
+					int batch = (*batches_adm)[rodovia]["Ultimo"];
+					 while(true){
+						std::string ultimo = inner_batch[std::to_string(batch)]["Ultimo Frame"];
+						std::string primeiro = inner_batch[std::to_string(batch)]["Primeiro Frame"];
+						if (std::stoi(ultimo) < frame_int){
+							batch++;}
+						else if (std::stoi(primeiro) <= frame_int){
+							(*batches_adm)[rodovia]["Ultimo"] = batch;
+							
+							return std::to_string(batch);
+						}
+					  }
+					}
+
+//Função que efetua os cálculos dos parametros dos carros
 void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_indexes,
                     std::vector<std::string> rodovias, int index,
-                    std::vector<std::mutex> * mutexes, json * parametros){
+                    std::vector<std::mutex> * mutexes, json * parametros,
+					json * batches_adm){
 
     std::string rodovia = rodovias[index];
 
@@ -151,7 +194,8 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
                 std::string placa = carro.key();
 
                 rodovia_frame_agg[rodovia][frame][placa] = json {};
-
+				
+				
                 //// --------------- Cálculos de cada carro 
 
                 // Posição ---------------
@@ -172,7 +216,7 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
                 rodovia_frame_agg[rodovia][frame][placa]["Velocidade"] = std::abs(t_1 - t_0) / diff_frame ;
 				
 				double vel_1 = rodovia_frame_agg[rodovia][frame][placa]["Velocidade"];; // Estaremos olhando apenas para o valor Y do eixo
-				
+
                 bool acima_da_vel = (vel_1 > (*parametros)[rodovia]["velocidadeMaxima"]);
 				
                 rodovia_frame_agg[rodovia][frame][placa]["Acima da Velocidade"] = acima_da_vel; 
@@ -207,15 +251,15 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 				rodovia_frame_agg[rodovia][frame][placa]["Risco Colisão"] = riscos;}
                 // Acidente ---------------
             for(auto carro = inner_hash[  frame ].begin(); carro != inner_hash[  frame ].end(); ++carro){
-                
+				std::string placa = carro.key();
+				double pos = carro.value()[1];
+				rodovia_frame_agg[rodovia][frame][placa]["Batido"] = false;
+				double pos_prevista = rodovia_frame_agg[rodovia][frame][placa]["Posição Prevista"];
 				for(auto carro2 = inner_hash[  frame ].begin(); carro2 != inner_hash[  frame ].end(); ++carro2){
                     if (carro.key() == carro2.key()){ continue; }
                     //checa se após o dado número de frames um carro ultrapassará o outro (assim, colidindo)
                     if( carro.value()[0] == carro2.value()[0]){
-							double pos = carro.value()[1];
 							double pos2 = carro2.value()[1];
-							std::string placa = carro.key();
-							double pos_prevista = rodovia_frame_agg[rodovia][frame][placa]["Posição Prevista"];
 							std::string placa2 = carro2.key();
 							double pos_prevista2 = rodovia_frame_agg[rodovia][frame][placa2]["Posição Prevista"];
 							if ((pos > pos2 and pos_prevista < pos_prevista2)
@@ -224,19 +268,44 @@ void calcula_carros(json * hash_agg, std::vector<std::vector<int>> * frames_inde
 							or (std::abs(pos_prevista-pos_prevista2) <= (*parametros)[rodovia]["tamanhoCarro"])){
 								(rodovia_frame_agg[rodovia][frame][placa]["Risco Colisão"]).push_back(placa2);
 								if ( rodovia_frame_agg[rodovia][frame][placa].contains("Velocidade")
-								 and rodovia_frame_agg[rodovia][frame][placa]["Velocidade"] == 0){
+								 and rodovia_frame_agg[rodovia][frame][placa]["Velocidade"] == 0
+								 and !rodovia_frame_agg[rodovia][frame][placa]["Batido"]){
 									 rodovia_frame_agg[rodovia][frame][placa]["Batido"] = true;
 								 }
 						}
                     }
-                }
-            }
+				}
+			std::string str_start = (*batches_adm)[rodovia][getBatch(rodovia, frame, batches_adm)]["start"];
+			// Parse the string into a std::tm structure
+			std::tm tm = {};
+			std::istringstream iss(str_start);
+			iss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S.");
+
+			// Extract the milliseconds value from the stream
+			int microseconds;
+			iss >> microseconds;
+
+			// Convert the std::tm structure to a std::chrono::time_point
+			auto start = std::chrono::system_clock::from_time_t(std::mktime(&tm)) + std::chrono::microseconds(microseconds);
+			std::time_t time_t_now = std::chrono::system_clock::to_time_t(start);
+			
+			
+			auto end = std::chrono::high_resolution_clock::now();
+			time_t_now = std::chrono::system_clock::to_time_t(end);
+
+			auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+			rodovia_frame_agg[rodovia][frame][placa]["Tempo de Execução"] = duration.count();
+			}
+
+                
+
 			ultimo_frame = frame_num;
             ultimo_index = frame_index;
+			
             }
 
         if( !waiting){
-        std::string filename_output = std::string("./output/") + rodovia + std::string("_output_") + std::to_string(contador) + std::string(".txt");
+        std::string filename_output = std::string("./output/") + rodovia + std::string("_output_") + std::to_string(contador) + std::string(".json");
 
         std::ofstream file(filename_output);
 
@@ -263,6 +332,8 @@ int main() {
 
     //Lista dos nomes das rodovias
     std::vector<std::string> rodovias;
+	
+	json batches_adm;
 
     //Carregando dados de parametros
 	json parametros;
@@ -276,6 +347,8 @@ int main() {
 	
 	  for (auto& parametros_rodovia : parametros.items()) {
         rodovias.push_back(parametros_rodovia.key());
+		batches_adm[parametros_rodovia.key()] = {};
+		batches_adm[parametros_rodovia.key()]["Ultimo"] = 0;
         NUM_THREADS++;
   }
 
@@ -288,12 +361,14 @@ int main() {
     std::vector<std::mutex> mutexes(NUM_THREADS); 
 
     for (int l = 0; l < NUM_THREADS; l++) {
-              threads_files[l] = std::thread(read_aggregate, &hash_agg, &frames_indexes, rodovias, l, &mutexes);
+              threads_files[l] = std::thread(read_aggregate, &hash_agg, &frames_indexes,
+											 rodovias, l, &mutexes, &batches_adm);
     }
 
 
     for (int l = 0; l < NUM_THREADS; l++) {
-              threads_calculations[l] = std::thread(calcula_carros, &hash_agg, &frames_indexes, rodovias, l, &mutexes, &parametros);
+              threads_calculations[l] = std::thread(calcula_carros, &hash_agg, &frames_indexes, rodovias,
+													l, &mutexes, &parametros, &batches_adm);
     }
     
 
