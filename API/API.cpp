@@ -2,16 +2,10 @@
 #include <string>
 #include <sstream>
 #include <queue>
+#include <nlohmann/json.hpp>
+
 
 using namespace std;
-
-struct Veicle
-{
-    string plate_code;
-    string name;
-    string year;
-    string model;
-};
 
 class API 
 {
@@ -24,7 +18,7 @@ class API
         }
 
         void query_veicle(string plate_code){
-            std::string command = "python3 API.py " + plate_code;
+            std::string command = "python3 api/API.py " + plate_code;
             FILE* stream = popen(command.c_str(), "r");
             char output[256];
             fgets(output, sizeof(output), stream);
@@ -74,8 +68,8 @@ public:
         }
     }
 
-    Veicle search(){
-        Veicle result;
+    nlohmann::json search(){
+        nlohmann::json result = nlohmann::json {};
         while (!this->queue.empty()){
             string plate_code = this->queue.front();
             this->queue.pop();
@@ -86,10 +80,10 @@ public:
             string year = api.get_year();
             string model = api.get_model();
 
-            result.plate_code = plate_code;
-            result.name = name;
-            result.year = year;
-            result.model = model;
+            result["placa"] = plate_code;
+            result["nome"] = name;
+            result["ano"] = year;
+            result["modelo"] = model;
 
         }
         return result;
@@ -107,18 +101,3 @@ APIQueue::~APIQueue()
 {
 
 };
-
-
-int main(int argc, char const *argv[])
-{
-    APIQueue apiQueue(10);
-    apiQueue.push("SUR2K34");
-    apiQueue.push("COL3H45");
-
-    Veicle veicle = apiQueue.search();
-
-    cout << veicle.plate_code << endl;
-    cout << veicle.name << endl;
-    cout << veicle.year << endl;
-    cout << veicle.model << endl;
-}
