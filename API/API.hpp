@@ -1,9 +1,11 @@
+#ifndef API_CLASS_HPP
+#define API_CLASS_HPP
+
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <queue>
 #include <nlohmann/json.hpp>
-
 
 using namespace std;
 
@@ -61,19 +63,22 @@ public:
     APIQueue(int lenQueue);
     ~APIQueue();
 
-    void push(string plate_code){
+    bool push(string plate_code){
         if (this->lenQueue < this->maxLenQueue){
             this->queue.push(plate_code);
             this->lenQueue++;
+
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
     nlohmann::json search(){
         nlohmann::json result = nlohmann::json {};
-        while (!this->queue.empty()){
             string plate_code = this->queue.front();
-            this->queue.pop();
-            this->lenQueue--;
+
             API api;
             api.query_veicle(plate_code);
             string name = api.get_name();
@@ -85,7 +90,8 @@ public:
             result["ano"] = year;
             result["modelo"] = model;
 
-        }
+            this->queue.pop();
+            this->lenQueue--;
         return result;
     }
     
@@ -101,3 +107,6 @@ APIQueue::~APIQueue()
 {
 
 };
+
+
+#endif // API_CLASS_HPP
