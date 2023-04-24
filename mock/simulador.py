@@ -4,6 +4,7 @@ import pistas
 import carros
 import numpy as np
 import datetime
+import sys
 
 br101 = pistas.Road()
 
@@ -13,7 +14,8 @@ params = json.load(open('parametros.json'))
 
 keys = params.keys()
 
-key = np.random.choice(list(keys))
+#CHAMAR NO DOCKER PYTHON3 SIMULADOR.PY {KEYS parametros.json}
+key = sys.argv[1]
 
 params = params[key]
 
