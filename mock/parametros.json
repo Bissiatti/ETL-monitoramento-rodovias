@@ -13,7 +13,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 100,
-    "interfaceGrafica": false,
+    "interfaceGrafica": true,
 	"tamanhoCarro": 74
 	},
     "BR-116":{

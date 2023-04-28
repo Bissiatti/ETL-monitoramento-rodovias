@@ -21,6 +21,9 @@ var filesNames = [];
 path = './output'
 
 async function readJsonFiles(files) {
+  if (files.length == 0) {
+    return {};
+  }
   console.log(path + "/" + files[0]);
   const promises = files.map(file => fs.readFile(path + "/" + file, 'utf8'));
   const data = await Promise.all(promises);
@@ -31,36 +34,27 @@ async function readJsonFiles(files) {
 
 async function readFolder(folder) {
   const files = await fs.readdir(folder);
-  // faça algo com o array de nomes de arquivos
-  
-  // Como obter os files que não estão contidos no array filesNames
   return files;
 }
 
-
-
-
-// Exemplo de uso
-readJsonFiles(filesNames)
-  .then(json => {
-    // faça algo com o objeto json resultante
-    console.log(json);
-  });
 
 app.get('/data', (req, res) => {
   // rota para retornar os dados do arquivo JSON
   readFolder(path)
   .then((files) => {
     files = files.filter(file => !filesNames.includes(file));
+    // sort files by number in filename
+    files.sort((a, b) => {
+      return parseInt(a.match(/\d+/)[0]) - parseInt(b.match(/\d+/)[0]);
+    });
     filesNames = filesNames.concat(files);
-    console.log(files);
+    console.log(files.keys());
     readJsonFiles(files)
   .then((json) => {
     // concatenar o json com a variavel data
     data = Object.assign({}, data, json);
-    console.table(data);
-    console.group(data);
     }).then(res.json(data));
+    // data = {};
   });
 });
 

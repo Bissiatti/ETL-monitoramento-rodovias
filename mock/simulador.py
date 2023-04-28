@@ -8,7 +8,7 @@ import sys
 
 br101 = pistas.Road()
 
-params = json.load(open('parametros.json'))
+params = json.load(open('./mock/parametros.json'))
 
 # select a random road on params
 
@@ -19,14 +19,12 @@ key = sys.argv[1]
 
 params = params[key]
 
-print(params.keys())
-
-plate = json.loads(open('placas.json').read())
+plate = json.loads(open('./mock/placas.json').read())
 
 interface_graph = params['interfaceGrafica']
 
-path = "../data/"
-pathdt = '../delta-time/'
+path = "./data/"
+pathdt = './delta-time/'
 
 if interface_graph:
     pygame.init()
@@ -138,8 +136,7 @@ while True:
         timer = 5000
         to_save = {}
         # adiciona registro da ordem de leitura dos frames
-        with open(pathdt + key + "_" + str(numberSaved) + ".txt", 'a') as fl:
-            print(str(datetime.datetime.now()))
+        with open(pathdt + key + "_" + str(numberSaved) + ".txt", 'w') as fl:
             fl.write(str(datetime.datetime.now()) + "\n" + saveTime)
         saveTime = ''
         numberSaved += 1
