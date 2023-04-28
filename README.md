@@ -6,13 +6,13 @@
 
 Esse software é composto de um simulador de tráfego desenvolvido em python com interface gráfica em pygame. É possível modificar os parâmetros de simulação como a quantidade de veículos, a velocidade máxima, a quantidade de faixas e a aceleração dos veículos. O simulador exporta duas informações, o log de tempo percorrido no simulador e o log de veículos que é composto de um arquivo json que informa a posição dos veículos presentes na rodovia em cada instante de tempo.  
 
-![Interface gráfica do simulador, opicional.](imgs/simulador.gif)
+![Interface gráfica do simulador, opicional.](imgs/simulator.gif)
 
 Já o ETL foi construido para, a partir da posição dos veículos de uma rodovia em função do tempo, calcula a velocidade e a aceleração dos veículos, detecta colisões e encontra as informações relacionadas a placa do veículo a partir da simulação de uma API legada. O ETL é capaz de ler e tratar informações de múltiplas rodovias ao mesmo tempo, bem como, lidar com a chegada de novas informações de veículos em tempo real a partir de técnicas de paralelismo e multithreading. Por fim, o ETL exporta um arquivo json com as informações de velocidade, aceleração, placa e colisões dos veículos em cada instante de tempo.
 
 E o Dashboard é uma aplicação web simples que lê o arquivo json gerado pelo ETL e exibe as informações de velocidade, aceleração, placa e colisões dos veículos em cada instante de tempo. O dashboard é atualizado a cada 5 segundos com as informações do ETL. Na interface é possível pesquisar o instante de tempo desejado e visualizar as informações dos veículos naquele instante de tempo em todas as rodovias.
 
-[Resultado do Dashboard Web](imgs/dash.png)
+![Resultado do Dashboard Web](imgs/dash.png)
 
 ## Como rodar
 
