@@ -1,7 +1,7 @@
 import pygame
 import json
-import pistas
-import carros
+from mock import pistas
+from mock import carros
 import numpy as np
 import datetime
 import sys
@@ -12,11 +12,9 @@ params = json.load(open('./mock/parametros.json'))
 
 # select a random road on params
 
-keys = params.keys()
+keys = list(params.keys())
 
-#CHAMAR NO DOCKER PYTHON3 SIMULADOR.PY {KEYS parametros.json}
-key = sys.argv[1]
-
+key = np.random.choice(keys)
 params = params[key]
 
 plate = json.loads(open('./mock/placas.json').read())

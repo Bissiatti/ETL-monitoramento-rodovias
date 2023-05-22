@@ -17,7 +17,7 @@ json lerArquivoSimula(std::string rodovia, int i){
     std::string file_name = rodovia + "_" + std::to_string(i);
     std::string file_name_json = std::string("./data/") + file_name + std::string(".json");
 
-    while (true) {
+    while (true){
         std::ifstream file(file_name_json, std::ios::in);
 
         if (file.is_open()) {
@@ -29,7 +29,6 @@ json lerArquivoSimula(std::string rodovia, int i){
         std::cout << "Não encontrado o arquivo " << file_name_json << std::endl;
         sleep(1);
     }
-
 }
 
 std::vector<int> lerArquivoIndices(std::string rodovia, int i, json * batches_adm){
