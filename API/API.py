@@ -1,7 +1,7 @@
 import json
 import sys
 
-placas = open('API/placas2.json', 'r') 
+placas = open('../../API/placas2.json', 'r') 
 plate_code = sys.argv[1]
 data = json.load(placas)  # convert JSON string to Python list of dictionaries
 

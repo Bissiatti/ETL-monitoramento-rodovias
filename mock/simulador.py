@@ -1,10 +1,20 @@
 import pygame
 import json
-from mock import pistas
-from mock import carros
+import pistas
+import carros
 import numpy as np
 import datetime
 import sys
+
+import random
+import time
+from concurrent import futures
+
+import grpc
+
+import route_guide_pb2
+import route_guide_pb2_grpc
+import logging
 
 br101 = pistas.Road()
 
@@ -126,19 +136,28 @@ while True:
     saveTime += str(total_time) + '\n'
     
     if isSaved:
-        to_save = json.dumps(to_save)
+        saveTime = saveTime.split('\n')
+        union_json = {'data':to_save,'delta_time':saveTime,'now':str(datetime.datetime.now()),'name':key,'number':numberSaved}
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = route_guide_pb2_grpc.HelloServiceStub(channel)
+        response = stub.SayHello(route_guide_pb2.HelloRequest(name=json.dumps(union_json)))
+        print(response.message)
+        #to_save = json.dumps(to_save)
         # Serializing json
         # Writing to sample.json
-        with open(path + key + "_" + str(numberSaved) + ".json", "w") as outfile:
-            outfile.write(to_save)
+        # with open(path + key + "_" + str(numberSaved) + ".json", "w") as outfile:
+        #     outfile.write(to_save)
         timer = 5000
         to_save = {}
         # adiciona registro da ordem de leitura dos frames
-        with open(pathdt + key + "_" + str(numberSaved) + ".txt", 'w') as fl:
-            fl.write(str(datetime.datetime.now()) + "\n" + saveTime)
+        # with open(pathdt + key + "_" + str(numberSaved) + ".txt", 'w') as fl:
+        #     fl.write(str(datetime.datetime.now()) + "\n" + saveTime)
         saveTime = ''
         numberSaved += 1
     total_time += ms
     if interface_graph:
         draw()
+
+
+
 

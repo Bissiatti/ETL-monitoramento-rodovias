@@ -20,7 +20,7 @@ class API
         }
 
         void query_veicle(string plate_code){
-            std::string command = "python3 API/API.py " + plate_code;
+            std::string command = "python3 ../../API/API.py " + plate_code;
             FILE* stream = popen(command.c_str(), "r");
             char output[256];
             fgets(output, sizeof(output), stream);

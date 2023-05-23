@@ -2,6 +2,14 @@
 
 ## André Costa, Emanuel Bissiatti, João Lucas Duim, Rafael Portácio, Victor Bombarda
 
+## Com GRPC
+
+Baixe o GRPC para o C++ e para o Python, compile o código C++ usando o comando: './run.sh', vá para o cmake/build. Em o comando: './route_guide_server', em seguida execute o comando em um outro terminal 'python3 server.py' para executar o cliente em python.
+
+Obs: Rodamos essses comandos dentro da biblioteca do GRPC, em exemplos/cpp/route_guide, pois, tivemos problemas com a instalação do GRPC e sua execução em outros diretórios.
+
+Obs2: Essa biblioteca não funcionou no Ubuntu, só conseguimos executar no Fedora 37
+
 ## O Sistema de monitoramento de rodovias
 
 Esse software é composto de um simulador de tráfego desenvolvido em python com interface gráfica em pygame. É possível modificar os parâmetros de simulação como a quantidade de veículos, a velocidade máxima, a quantidade de faixas e a aceleração dos veículos. O simulador exporta duas informações, o log de tempo percorrido no simulador e o log de veículos que é composto de um arquivo json que informa a posição dos veículos presentes na rodovia em cada instante de tempo.  

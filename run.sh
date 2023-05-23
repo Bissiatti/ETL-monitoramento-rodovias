@@ -13,7 +13,7 @@ pushd cmake/build
 cmake -DCMAKE_PREFIX_PATH=$MY_INSTALL_DIR ../..
 
 # Compila o projeto usando o make
-make -j 4
+make -j 4 -W all  -B -i
 
 # Sai do diretório
 popd

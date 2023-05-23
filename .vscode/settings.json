@@ -1,7 +1,9 @@
 {
+    "cmake.sourceDirectory": "/wsl.localhost/fedora37/home/bissiatti/grpc/examples/cpp/route_guide",
     "files.associations": {
-        "string": "cpp",
-        "ostream": "cpp"
-    },
-    "cmake.sourceDirectory": "/wsl.localhost/fedora37/home/bissiatti/grpc/examples/cpp/route_guide/ETL"
+        "thread": "cpp",
+        "xstring": "cpp",
+        "queue": "cpp",
+        "vector": "cpp"
+    }
 }

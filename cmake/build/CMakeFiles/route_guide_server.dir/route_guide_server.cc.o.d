@@ -151,89 +151,169 @@ CMakeFiles/route_guide_server.dir/route_guide_server.cc.o: \
  /usr/include/c++/12/bits/locale_facets.tcc \
  /usr/include/c++/12/bits/basic_ios.tcc \
  /usr/include/c++/12/bits/ostream.tcc /usr/include/c++/12/istream \
- /usr/include/c++/12/bits/istream.tcc /usr/include/c++/12/memory \
+ /usr/include/c++/12/bits/istream.tcc /usr/include/c++/12/fstream \
+ /usr/include/c++/12/bits/codecvt.h \
+ /usr/include/c++/12/x86_64-redhat-linux/bits/basic_file.h \
+ /usr/include/c++/12/x86_64-redhat-linux/bits/c++io.h \
+ /usr/include/c++/12/bits/fstream.tcc /usr/include/c++/12/vector \
  /usr/include/c++/12/bits/stl_uninitialized.h \
- /usr/include/c++/12/bits/stl_raw_storage_iter.h \
- /usr/include/c++/12/bits/align.h /usr/include/c++/12/bit \
+ /usr/include/c++/12/bits/stl_vector.h \
+ /usr/include/c++/12/bits/stl_bvector.h \
+ /usr/include/c++/12/bits/vector.tcc /usr/include/c++/12/thread \
+ /usr/include/c++/12/bits/std_thread.h /usr/include/c++/12/tuple \
  /usr/include/c++/12/bits/uses_allocator.h \
- /usr/include/c++/12/bits/unique_ptr.h /usr/include/c++/12/tuple \
+ /usr/include/c++/12/bits/unique_ptr.h \
+ /usr/include/c++/12/bits/this_thread_sleep.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
+ /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
+ /usr/include/linux/close_range.h /usr/include/c++/12/filesystem \
+ /usr/include/c++/12/bits/fs_fwd.h /usr/include/c++/12/bits/fs_path.h \
+ /usr/include/c++/12/locale \
+ /usr/include/c++/12/bits/locale_facets_nonio.h \
+ /usr/include/c++/12/x86_64-redhat-linux/bits/time_members.h \
+ /usr/include/c++/12/x86_64-redhat-linux/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/12/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/12/bits/locale_conv.h /usr/include/c++/12/iomanip \
+ /usr/include/c++/12/bits/quoted_string.h /usr/include/c++/12/sstream \
+ /usr/include/c++/12/bits/sstream.tcc /usr/include/c++/12/codecvt \
+ /usr/include/c++/12/ext/concurrence.h \
  /usr/include/c++/12/bits/shared_ptr.h \
  /usr/include/c++/12/bits/shared_ptr_base.h \
  /usr/include/c++/12/bits/allocated_ptr.h \
  /usr/include/c++/12/ext/aligned_buffer.h \
- /usr/include/c++/12/ext/concurrence.h \
+ /usr/include/c++/12/bits/fs_dir.h /usr/include/c++/12/bits/fs_ops.h \
+ /usr/include/c++/12/mutex /usr/include/c++/12/bits/std_mutex.h \
+ /usr/include/c++/12/bits/unique_lock.h \
+ /home/bissiatti/grpc/examples/cpp/route_guide/API/API.hpp \
+ /usr/include/c++/12/queue /usr/include/c++/12/deque \
+ /usr/include/c++/12/bits/stl_deque.h /usr/include/c++/12/bits/deque.tcc \
+ /usr/include/c++/12/bits/stl_queue.h \
+ /usr/local/include/nlohmann/json.hpp /usr/include/c++/12/cstddef \
+ /usr/include/c++/12/functional /usr/include/c++/12/bits/std_function.h \
+ /usr/include/c++/12/unordered_map /usr/include/c++/12/bits/hashtable.h \
+ /usr/include/c++/12/bits/hashtable_policy.h \
+ /usr/include/c++/12/bits/enable_special_members.h \
+ /usr/include/c++/12/bits/node_handle.h \
+ /usr/include/c++/12/bits/unordered_map.h \
+ /usr/include/c++/12/bits/erase_if.h /usr/include/c++/12/array \
+ /usr/include/c++/12/compare /usr/include/c++/12/iterator \
+ /usr/include/c++/12/bits/stream_iterator.h /usr/include/c++/12/memory \
+ /usr/include/c++/12/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/12/bits/align.h /usr/include/c++/12/bit \
  /usr/include/c++/12/bits/shared_ptr_atomic.h \
  /usr/include/c++/12/bits/atomic_base.h \
  /usr/include/c++/12/bits/atomic_lockfree_defines.h \
  /usr/include/c++/12/backward/auto_ptr.h \
- /usr/include/c++/12/pstl/glue_memory_defs.h /include/grpc/grpc.h \
- /include/grpc/support/port_platform.h /usr/include/linux/version.h \
- /include/grpc/byte_buffer.h /include/grpc/impl/grpc_types.h \
- /include/grpc/impl/compression_types.h /include/grpc/slice.h \
- /include/grpc/impl/slice_type.h /include/grpc/support/sync.h \
- /include/grpc/support/time.h /include/grpc/support/sync_generic.h \
- /include/grpc/support/atm.h /include/grpc/support/atm_gcc_atomic.h \
+ /usr/include/c++/12/pstl/glue_memory_defs.h /usr/include/c++/12/utility \
+ /usr/include/c++/12/bits/stl_relops.h \
+ /usr/local/include/nlohmann/adl_serializer.hpp \
+ /usr/local/include/nlohmann/detail/abi_macros.hpp \
+ /usr/local/include/nlohmann/detail/conversions/from_json.hpp \
+ /usr/include/c++/12/forward_list /usr/include/c++/12/bits/forward_list.h \
+ /usr/include/c++/12/bits/forward_list.tcc /usr/include/c++/12/map \
+ /usr/include/c++/12/bits/stl_tree.h /usr/include/c++/12/bits/stl_map.h \
+ /usr/include/c++/12/bits/stl_multimap.h /usr/include/c++/12/valarray \
+ /usr/include/c++/12/bits/valarray_array.h \
+ /usr/include/c++/12/bits/valarray_array.tcc \
+ /usr/include/c++/12/bits/valarray_before.h \
+ /usr/include/c++/12/bits/slice_array.h \
+ /usr/include/c++/12/bits/valarray_after.h \
+ /usr/include/c++/12/bits/gslice.h \
+ /usr/include/c++/12/bits/gslice_array.h \
+ /usr/include/c++/12/bits/mask_array.h \
+ /usr/include/c++/12/bits/indirect_array.h \
+ /usr/local/include/nlohmann/detail/exceptions.hpp \
+ /usr/local/include/nlohmann/detail/value_t.hpp \
+ /usr/local/include/nlohmann/detail/macro_scope.hpp \
+ /usr/local/include/nlohmann/detail/meta/detected.hpp \
+ /usr/local/include/nlohmann/detail/meta/void_t.hpp \
+ /usr/local/include/nlohmann/thirdparty/hedley/hedley.hpp \
+ /usr/include/c++/12/version /usr/include/c++/12/cassert \
+ /usr/include/assert.h \
+ /usr/local/include/nlohmann/detail/string_escape.hpp \
+ /usr/local/include/nlohmann/detail/input/position_t.hpp \
+ /usr/local/include/nlohmann/detail/meta/cpp_future.hpp \
+ /usr/local/include/nlohmann/detail/meta/type_traits.hpp \
+ /usr/local/include/nlohmann/detail/iterators/iterator_traits.hpp \
+ /usr/local/include/nlohmann/detail/meta/call_std/begin.hpp \
+ /usr/local/include/nlohmann/detail/meta/call_std/end.hpp \
+ /usr/local/include/nlohmann/json_fwd.hpp \
+ /usr/local/include/nlohmann/detail/string_concat.hpp \
+ /usr/include/c++/12/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/local/include/nlohmann/detail/meta/identity_tag.hpp \
+ /usr/local/include/nlohmann/detail/meta/std_fs.hpp \
+ /usr/local/include/nlohmann/detail/conversions/to_json.hpp \
+ /usr/local/include/nlohmann/detail/iterators/iteration_proxy.hpp \
+ /usr/local/include/nlohmann/byte_container_with_subtype.hpp \
+ /usr/local/include/nlohmann/detail/hash.hpp \
+ /usr/local/include/nlohmann/detail/input/binary_reader.hpp \
+ /usr/local/include/nlohmann/detail/input/input_adapters.hpp \
+ /usr/include/c++/12/numeric /usr/include/c++/12/bits/stl_numeric.h \
+ /usr/include/c++/12/pstl/glue_numeric_defs.h \
+ /usr/local/include/nlohmann/detail/input/json_sax.hpp \
+ /usr/local/include/nlohmann/detail/input/lexer.hpp \
+ /usr/local/include/nlohmann/detail/meta/is_sax.hpp \
+ /usr/local/include/nlohmann/detail/input/parser.hpp \
+ /usr/local/include/nlohmann/detail/iterators/internal_iterator.hpp \
+ /usr/local/include/nlohmann/detail/iterators/primitive_iterator.hpp \
+ /usr/local/include/nlohmann/detail/iterators/iter_impl.hpp \
+ /usr/local/include/nlohmann/detail/iterators/json_reverse_iterator.hpp \
+ /usr/local/include/nlohmann/detail/json_custom_base_class.hpp \
+ /usr/local/include/nlohmann/detail/json_pointer.hpp \
+ /usr/local/include/nlohmann/detail/json_ref.hpp \
+ /usr/local/include/nlohmann/detail/output/binary_writer.hpp \
+ /usr/local/include/nlohmann/detail/output/output_adapters.hpp \
+ /usr/local/include/nlohmann/detail/output/serializer.hpp \
+ /usr/local/include/nlohmann/detail/conversions/to_chars.hpp \
+ /usr/local/include/nlohmann/ordered_map.hpp /usr/include/c++/12/any \
+ /usr/local/include/nlohmann/detail/macro_unscope.hpp \
+ /usr/local/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
+ /include/grpc/grpc.h /include/grpc/support/port_platform.h \
+ /usr/include/linux/version.h /include/grpc/byte_buffer.h \
+ /include/grpc/impl/grpc_types.h /include/grpc/impl/compression_types.h \
+ /include/grpc/slice.h /include/grpc/impl/slice_type.h \
+ /include/grpc/support/sync.h /include/grpc/support/time.h \
+ /include/grpc/support/sync_generic.h /include/grpc/support/atm.h \
+ /include/grpc/support/atm_gcc_atomic.h \
  /include/grpc/support/sync_abseil.h /include/grpc/status.h \
  /include/grpc/slice_buffer.h /include/grpc/impl/connectivity_state.h \
  /include/grpc/impl/propagation_bits.h \
- /include/grpcpp/security/server_credentials.h /usr/include/c++/12/vector \
- /usr/include/c++/12/bits/stl_vector.h \
- /usr/include/c++/12/bits/stl_bvector.h \
- /usr/include/c++/12/bits/vector.tcc \
+ /include/grpcpp/security/server_credentials.h \
  /include/grpc/grpc_security_constants.h \
  /include/grpcpp/impl/grpc_library.h \
  /include/grpcpp/impl/codegen/config.h /include/grpcpp/support/config.h \
  /include/grpcpp/security/auth_metadata_processor.h \
- /usr/include/c++/12/map /usr/include/c++/12/bits/stl_tree.h \
- /usr/include/c++/12/bits/node_handle.h \
- /usr/include/c++/12/bits/stl_map.h \
- /usr/include/c++/12/bits/stl_multimap.h \
- /usr/include/c++/12/bits/erase_if.h \
- /include/grpcpp/security/auth_context.h /usr/include/c++/12/iterator \
- /usr/include/c++/12/bits/stream_iterator.h \
- /include/grpcpp/support/string_ref.h /usr/include/string.h \
- /usr/include/strings.h /include/grpcpp/support/status.h \
+ /include/grpcpp/security/auth_context.h \
+ /include/grpcpp/support/string_ref.h /include/grpcpp/support/status.h \
  /include/grpcpp/impl/status.h /include/grpcpp/support/status_code_enum.h \
  /include/grpcpp/security/tls_credentials_options.h \
  /include/grpc/grpc_security.h /include/grpc/support/log.h \
  /usr/include/c++/12/stdlib.h \
  /include/grpcpp/security/tls_certificate_provider.h \
  /include/grpcpp/security/tls_certificate_verifier.h \
- /usr/include/c++/12/functional /usr/include/c++/12/bits/std_function.h \
- /usr/include/c++/12/unordered_map /usr/include/c++/12/bits/hashtable.h \
- /usr/include/c++/12/bits/hashtable_policy.h \
- /usr/include/c++/12/bits/enable_special_members.h \
- /usr/include/c++/12/bits/unordered_map.h /usr/include/c++/12/array \
- /usr/include/c++/12/compare /usr/include/c++/12/utility \
- /usr/include/c++/12/bits/stl_relops.h /include/grpcpp/impl/sync.h \
- /usr/include/c++/12/mutex /usr/include/c++/12/bits/std_mutex.h \
- /usr/include/c++/12/bits/unique_lock.h \
- /include/absl/synchronization/mutex.h /usr/include/c++/12/atomic \
- /usr/include/c++/12/cstring /include/absl/base/const_init.h \
+ /include/grpcpp/impl/sync.h /include/absl/synchronization/mutex.h \
+ /usr/include/c++/12/atomic /include/absl/base/const_init.h \
  /include/absl/base/config.h \
  /usr/lib/gcc/x86_64-redhat-linux/12/include/limits.h \
  /usr/lib/gcc/x86_64-redhat-linux/12/include/syslimits.h \
  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
- /usr/include/bits/uio_lim.h /usr/include/c++/12/cstddef \
- /include/absl/base/options.h /include/absl/base/policy_checks.h \
+ /usr/include/bits/uio_lim.h /include/absl/base/options.h \
+ /include/absl/base/policy_checks.h \
  /include/absl/base/internal/identity.h \
  /include/absl/base/internal/low_level_alloc.h \
  /include/absl/base/attributes.h /include/absl/base/port.h \
- /include/absl/base/optimization.h /usr/include/assert.h \
- /include/absl/base/internal/thread_identity.h /usr/include/unistd.h \
- /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
- /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
- /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
- /usr/include/linux/close_range.h \
+ /include/absl/base/optimization.h \
+ /include/absl/base/internal/thread_identity.h \
  /include/absl/base/internal/per_thread_tls.h \
  /include/absl/base/internal/tsan_mutex_interface.h \
  /include/absl/base/thread_annotations.h \
  /include/absl/base/internal/thread_annotations.h \
  /include/absl/synchronization/internal/kernel_timeout.h \
  /include/absl/base/internal/raw_logging.h \
- /include/absl/base/internal/atomic_hook.h /usr/include/c++/12/cassert \
+ /include/absl/base/internal/atomic_hook.h \
  /include/absl/base/log_severity.h /include/absl/base/macros.h \
  /include/absl/time/clock.h /include/absl/time/time.h \
  /usr/include/sys/time.h /include/absl/strings/string_view.h \
@@ -352,4 +432,5 @@ CMakeFiles/route_guide_server.dir/route_guide_server.cc.o: \
  /include/google/protobuf/util/type_resolver_util.h \
  /include/grpcpp/support/proto_buffer_reader.h \
  /include/grpcpp/support/proto_buffer_writer.h \
- /include/grpcpp/support/stub_options.h
+ /include/grpcpp/support/stub_options.h \
+ /home/bissiatti/grpc/examples/cpp/route_guide/func.hpp
