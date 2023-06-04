@@ -5,62 +5,33 @@ import carros
 import numpy as np
 import datetime
 import sys
-
-import random
-import time
-from concurrent import futures
-
-import grpc
-
-import route_guide_pb2
-import route_guide_pb2_grpc
-import logging
+import threading
 
 br101 = pistas.Road()
-
 params = json.load(open('./mock/parametros.json'))
-
 # select a random road on params
-
-keys = list(params.keys())
-
-key = np.random.choice(keys)
+keys = params.keys()
+# CHAMAR NO DOCKER PYTHON3 SIMULADOR.PY {KEYS parametros.json}
+key = sys.argv[1]
 params = params[key]
-
 plate = json.loads(open('./mock/placas.json').read())
-
 interface_graph = params['interfaceGrafica']
-
 path = "./data/"
 pathdt = './delta-time/'
-
 if interface_graph:
     pygame.init()
-
 Width = 1280
 Height = 720
 if interface_graph:
     screen = pygame.display.set_mode((Width, Height))
-
 if interface_graph:
     pygame.display.set_caption("Simulador de tráfego")
-
-# Cor de fundo
 if interface_graph:
     bg = (10, 130, 20)
-
-# frames por segundo
-
-fps = 60
-
-# Relógio
-
+fps = 30
 clock = pygame.time.Clock()
-
 br101.setNumberLanes(params['sentido1Faixas'], params['sentido2Faixas'])
-
 cars = []
-
 colors = [(204, 204, 204),  # cinza claro
           (255, 204, 153),  # bege
           (204, 255, 204),  # verde claro
@@ -72,44 +43,13 @@ colors = [(204, 204, 204),  # cinza claro
           (153, 204, 255),  # azul claro
           (255, 153, 255)]  # roxo claro
 
-cars.append(carros.Cars(np.random.randint(-2, 2),Width,Height,100,colors[np.random.randint(0,10)],plate[np.random.randint(0,10)]['placa'],params))
+def escrever_arquivo(nome_arquivo, conteudo):
+    with open(nome_arquivo, 'a') as file:
+        file.write(conteudo + '\n')
 
-def draw():
-    screen.fill(bg)
-    br101.draw(screen, Width, Height)
-    for car in cars:
-        car.draw(screen)
-    if interface_graph:
-        pygame.display.update()
+def processar_resultados():
+    global cars, params, timer, to_save, total_time, numberSaved, saveTime
 
-numberSaved = 0
-saveTime = ''
-
-timer = 1000
-
-def update(timer,to_save,ms):
-    isSaved = False
-    for car in cars:
-        toDelete = car.update(ms,params['tempoColisao'])
-        if toDelete:
-            p = car.placa
-            plate.append({'placa':p})
-            cars.remove(car)
-        p, pos = car.getData()
-        to_save_frame[p] = pos
-        for car2 in cars:
-            if car != car2:
-                car.colision(car2,params['probabilidadeColisao'])
-    if timer <= 0:
-        isSaved = True
-    return to_save,isSaved
-
-timer = 5000
-timerCreate0 = 100
-timerCreate = timerCreate0
-to_save = {}
-total_time = 0
-while True:
     ms = clock.tick(fps)
     to_save_frame = {}
     if interface_graph:
@@ -117,7 +57,6 @@ while True:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-    timer -= ms
     timerCreate -= ms
     if np.random.rand() < params['probabilidadeDeTrocaDeFaixa']:
         if len(cars) > 0:
@@ -129,35 +68,114 @@ while True:
             p = plate[pId]['placa']
             # remove p of plate dictionary
             plate.pop(pId)
-            cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,10)],p,params))
+            cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,len(colors))],p,params))
         timerCreate = timerCreate0
-    to_save_frame,isSaved = update(timer,to_save_frame,ms)
+    to_save_frame,isSaved = update(to_save_frame,ms)
     to_save[total_time] = to_save_frame
     saveTime += str(total_time) + '\n'
+    to_save = json.dumps(to_save)
     
-    if isSaved:
-        saveTime = saveTime.split('\n')
-        union_json = {'data':to_save,'delta_time':saveTime,'now':str(datetime.datetime.now()),'name':key,'number':numberSaved}
-        channel = grpc.insecure_channel('localhost:50051')
-        stub = route_guide_pb2_grpc.HelloServiceStub(channel)
-        response = stub.SayHello(route_guide_pb2.HelloRequest(name=json.dumps(union_json)))
-        print(response.message)
-        #to_save = json.dumps(to_save)
-        # Serializing json
-        # Writing to sample.json
-        # with open(path + key + "_" + str(numberSaved) + ".json", "w") as outfile:
-        #     outfile.write(to_save)
-        timer = 5000
-        to_save = {}
-        # adiciona registro da ordem de leitura dos frames
-        # with open(pathdt + key + "_" + str(numberSaved) + ".txt", 'w') as fl:
-        #     fl.write(str(datetime.datetime.now()) + "\n" + saveTime)
-        saveTime = ''
-        numberSaved += 1
+    thread_escrita = threading.Thread(target=escrever_arquivo, args=(path + key + "_" + str(numberSaved) + ".json", to_save))
+    thread_escrita.start()
+    
+    to_save = {}
+    
+    # adiciona registro da ordem de leitura dos frames
+    escrever_arquivo(pathdt + key + "_" + str(numberSaved) + ".txt", str(datetime.datetime.now()) + "\n" + saveTime)
+    saveTime = ''
+    numberSaved += 1
     total_time += ms
     if interface_graph:
         draw()
 
+def draw():
+    screen.fill(bg)
+    br101.draw(screen, Width, Height)
+    for car in cars:
+        car.draw(screen)
+    if interface_graph:
+        pygame.display.update()
 
+def update(to_save, ms):
+    isSaved = False
+    for car in cars:
+        toDelete = car.update(ms, params['tempoColisao'])
+        if toDelete:
+            p = car.placa
+            plate.append({'placa': p})
+            cars.remove(car)
+        p, pos = car.getData()
+        to_save_frame[p] = pos
+        for car2 in cars:
+            if car != car2:
+                car.colision(car2, params['probabilidadeColisao'])
+    return to_save, isSaved
 
+timerCreate0 = 100
+timerCreate = timerCreate0
+to_save = {}
+total_time = 0
+lock = threading.Lock()
+
+def processar_resultados():
+    global cars, params, timer, to_save, total_time, numberSaved, saveTime
+
+    while True:
+        with lock:
+            ms = clock.tick(fps)
+            to_save_frame = {}
+            if interface_graph:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        quit()
+            timerCreate -= ms
+            if np.random.rand() < params['probabilidadeDeTrocaDeFaixa']:
+                if len(cars) > 0:
+                    np.random.choice(cars).changeLane()
+            if timerCreate <= 0:
+                if np.random.rand() > params['probabilidadeDeEntradaDeVeiculo']:
+                    lane = np.random.randint(-params['sentido1Faixas'], params['sentido2Faixas'])
+                    pId = np.random.randint(0, len(plate))
+                    p = plate[pId]['placa']
+                    # remove p of plate dictionary
+                    plate.pop(pId)
+                    cars.append(carros.Cars(lane, Width, Height, 100, colors[np.random.randint(0, len(colors))], p, params))
+                timerCreate = timerCreate0
+            to_save_frame, isSaved = update(to_save_frame, ms)
+            to_save[total_time] = to_save_frame
+            saveTime += str(total_time) + '\n'
+            to_save = json.dumps(to_save)
+
+        thread_escrita = threading.Thread(target=escrever_arquivo, args=(path + key + "_" + str(numberSaved) + ".json", to_save))
+        thread_escrita.start()
+
+        with lock:
+            to_save = {}
+
+            # adiciona registro da ordem de leitura dos frames
+            escrever_arquivo(pathdt + key + "_" + str(numberSaved) + ".txt", str(datetime.datetime.now()) + "\n" + saveTime)
+            saveTime = ''
+            numberSaved += 1
+            total_time += ms
+            if interface_graph:
+                draw()
+
+# Função principal
+def main():
+    thread_processamento = threading.Thread(target=processar_resultados)
+
+    if interface_graph:
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
+    thread_processamento.start()
+    thread_processamento.join()
+    print("Processamento concluído.")
+
+if __name__ == "__main__":
+    main()
 
