@@ -1,15 +1,15 @@
 version: "3.9"
 services:
   pyspark:
-    image: jupyter/pyspark-notebook
+    build: ./ # use the current directory as the source
     ports:
-      - 8888:8888
+      - 8888:8888 # publish the port 8888 to the host
     volumes:
       - ./notebooks:/home/jovyan/work
       - ./mock:/home/jovyan/mock
     environment:
       - JUPYTER_ENABLE_LAB=yes
-    command: start-notebook.sh --NotebookApp.token='' # Adiciona a opção aqui
+    command: start-notebook.sh --NotebookApp.token=''
   celery:
     image: celery
     depends_on:
@@ -28,7 +28,19 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=secret
       - MYSQL_DATABASE=todos
-  redis:
-    image: redis
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
     ports:
-      - 6379:6379
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+        - rabbitmq_go_net
+
+networks:
+  rabbitmq_go_net:
+    driver: bridge
+    
