@@ -6,6 +6,7 @@ import numpy as np
 import datetime
 import sys
 import threading
+from tasks import adiciona_carro
 
 br101 = pistas.Road()
 params = json.load(open('./mock/parametros.json'))
@@ -43,9 +44,11 @@ colors = [(204, 204, 204),  # cinza claro
           (153, 204, 255),  # azul claro
           (255, 153, 255)]  # roxo claro
 
-def escrever_arquivo(nome_arquivo, conteudo):
+def escrever_arquivo(nome_arquivo, conteudo): #Essa função
     with open(nome_arquivo, 'a') as file:
         file.write(conteudo + '\n')
+        # for carro in carros:
+        #     adiciona_carro.delay("placa", "rodovia", date.now(), x, y)
 
 def processar_resultados():
     global cars, params, timer, to_save, total_time, numberSaved, saveTime
