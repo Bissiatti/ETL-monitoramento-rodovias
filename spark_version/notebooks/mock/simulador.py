@@ -6,7 +6,8 @@ import numpy as np
 import datetime
 import sys
 import threading
-from tasks import adiciona_carro
+import time
+# from tasks import adiciona_carro
 
 br101 = pistas.Road()
 params = json.load(open('./mock/parametros.json'))
@@ -44,11 +45,14 @@ colors = [(204, 204, 204),  # cinza claro
           (153, 204, 255),  # azul claro
           (255, 153, 255)]  # roxo claro
 
-def escrever_arquivo(nome_arquivo, conteudo): #Essa função
-    with open(nome_arquivo, 'a') as file:
-        file.write(conteudo + '\n')
-        # for carro in carros:
-        #     adiciona_carro.delay("placa", "rodovia", date.now(), x, y)
+def escrever_arquivo(conteudo): #Essa função
+    timeNow = time.time()
+    with open('test.txt', 'w') as file:
+        file.write(json.dumps(conteudo) + '\n')
+        # for carro in conteudo.keys():
+        #     adiciona_carro.delay(carro, "rodovia", timeNow, counteudo[carro][0], counteudo[carro][1])
+
+print(time.time())
 
 def processar_resultados():
     global cars, params, timer, to_save, total_time, numberSaved, saveTime
@@ -73,7 +77,7 @@ def processar_resultados():
             plate.pop(pId)
             cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,len(colors))],p,params))
         timerCreate = timerCreate0
-    to_save_frame,isSaved = update(to_save_frame,ms)
+    to_save_frame = update(to_save_frame,ms)
     to_save[total_time] = to_save_frame
     saveTime += str(total_time) + '\n'
     to_save = json.dumps(to_save)
@@ -100,7 +104,6 @@ def draw():
         pygame.display.update()
 
 def update(to_save, ms):
-    isSaved = False
     for car in cars:
         toDelete = car.update(ms, params['tempoColisao'])
         if toDelete:
@@ -108,20 +111,21 @@ def update(to_save, ms):
             plate.append({'placa': p})
             cars.remove(car)
         p, pos = car.getData()
-        to_save_frame[p] = pos
+        to_save[p] = pos
         for car2 in cars:
             if car != car2:
                 car.colision(car2, params['probabilidadeColisao'])
-    return to_save, isSaved
+    return to_save
 
 timerCreate0 = 100
 timerCreate = timerCreate0
 to_save = {}
 total_time = 0
 lock = threading.Lock()
+numberSaved = 0
 
 def processar_resultados():
-    global cars, params, timer, to_save, total_time, numberSaved, saveTime
+    global cars, params, timer, to_save, total_time, numberSaved, saveTime,timerCreate
 
     while True:
         with lock:
@@ -145,24 +149,14 @@ def processar_resultados():
                     plate.pop(pId)
                     cars.append(carros.Cars(lane, Width, Height, 100, colors[np.random.randint(0, len(colors))], p, params))
                 timerCreate = timerCreate0
-            to_save_frame, isSaved = update(to_save_frame, ms)
-            to_save[total_time] = to_save_frame
-            saveTime += str(total_time) + '\n'
-            to_save = json.dumps(to_save)
+            to_save = update(to_save_frame, ms)
 
-        thread_escrita = threading.Thread(target=escrever_arquivo, args=(path + key + "_" + str(numberSaved) + ".json", to_save))
+        thread_escrita = threading.Thread(target=escrever_arquivo, args=(to_save,))
         thread_escrita.start()
 
-        with lock:
-            to_save = {}
+        if interface_graph:
+            draw()        
 
-            # adiciona registro da ordem de leitura dos frames
-            escrever_arquivo(pathdt + key + "_" + str(numberSaved) + ".txt", str(datetime.datetime.now()) + "\n" + saveTime)
-            saveTime = ''
-            numberSaved += 1
-            total_time += ms
-            if interface_graph:
-                draw()
 
 # Função principal
 def main():
