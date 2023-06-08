@@ -9,9 +9,9 @@ def adiciona_carro(placa, rodovia, pos_x, pos_y, tempo_da_simulacao):
     session = cluster.connect()
     session.execute("USE simulacao;")
     query = f"""
-    INSERT INTO simulacao (placa, rodovia, tempo_da_simulacao, pos_x, pos_y)
+    INSERT INTO positions (placa, rodovia, tempo_da_simulacao, pos_x, pos_y)
     
-    VALUES ('{placa}', '{rodovia}', {tempo_da_simulacao}, {pos_x}, {pos_y});    
+    VALUES ('{placa}', '{rodovia}', '{tempo_da_simulacao}', {pos_x}, {pos_y});    
     """
     session.execute(query)
 
