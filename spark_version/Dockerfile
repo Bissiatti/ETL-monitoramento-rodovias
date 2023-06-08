@@ -2,7 +2,7 @@
 FROM jupyter/pyspark-notebook
 
 # install the required packages using pip
-RUN pip install celery redis cassandra-driver mysql-connector-python cqlsh
+RUN pip install celery redis cassandra-driver mysql-connector-python cqlsh pyamqp
 
 # expose the port 8888 for jupyter lab
 EXPOSE 8888
