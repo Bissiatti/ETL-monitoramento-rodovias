@@ -7,7 +7,7 @@ import datetime
 import sys
 import threading
 import time
-# from tasks import adiciona_carro
+from tasks import adiciona_carro_banco
 
 br101 = pistas.Road()
 params = json.load(open('./mock/parametros.json'))
@@ -45,55 +45,15 @@ colors = [(204, 204, 204),  # cinza claro
           (153, 204, 255),  # azul claro
           (255, 153, 255)]  # roxo claro
 
-def escrever_arquivo(conteudo): #Essa função
+def exporta_dados(conteudo): #Essa função
+    global key
     timeNow = time.time()
-    with open('test.txt', 'w') as file:
-        file.write(json.dumps(conteudo) + '\n')
-        # for carro in conteudo.keys():
-        #     adiciona_carro.delay(carro, "rodovia", timeNow, counteudo[carro][0], counteudo[carro][1])
+    #with open('test.txt', 'w') as file:
+        #file.write(json.dumps(conteudo) + '\n')
+    for carro in conteudo.keys():
+        adiciona_carro_banco.delay(carro, key, conteudo[carro][0], conteudo[carro][1], timeNow)
 
 print(time.time())
-
-def processar_resultados():
-    global cars, params, timer, to_save, total_time, numberSaved, saveTime
-
-    ms = clock.tick(fps)
-    to_save_frame = {}
-    if interface_graph:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-    timerCreate -= ms
-    if np.random.rand() < params['probabilidadeDeTrocaDeFaixa']:
-        if len(cars) > 0:
-            np.random.choice(cars).changeLane()
-    if timerCreate <= 0:
-        if np.random.rand() > params['probabilidadeDeEntradaDeVeiculo']:
-            lane = np.random.randint(-params['sentido1Faixas'], params['sentido2Faixas'])
-            pId = np.random.randint(0,len(plate))
-            p = plate[pId]['placa']
-            # remove p of plate dictionary
-            plate.pop(pId)
-            cars.append(carros.Cars(lane,Width,Height,100,colors[np.random.randint(0,len(colors))],p,params))
-        timerCreate = timerCreate0
-    to_save_frame = update(to_save_frame,ms)
-    to_save[total_time] = to_save_frame
-    saveTime += str(total_time) + '\n'
-    to_save = json.dumps(to_save)
-    
-    thread_escrita = threading.Thread(target=escrever_arquivo, args=(path + key + "_" + str(numberSaved) + ".json", to_save))
-    thread_escrita.start()
-    
-    to_save = {}
-    
-    # adiciona registro da ordem de leitura dos frames
-    escrever_arquivo(pathdt + key + "_" + str(numberSaved) + ".txt", str(datetime.datetime.now()) + "\n" + saveTime)
-    saveTime = ''
-    numberSaved += 1
-    total_time += ms
-    if interface_graph:
-        draw()
 
 def draw():
     screen.fill(bg)
@@ -151,7 +111,7 @@ def processar_resultados():
                 timerCreate = timerCreate0
             to_save = update(to_save_frame, ms)
 
-        thread_escrita = threading.Thread(target=escrever_arquivo, args=(to_save,))
+        thread_escrita = threading.Thread(target=exporta_dados, args=(to_save,))
         thread_escrita.start()
 
         if interface_graph:

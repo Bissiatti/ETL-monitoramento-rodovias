@@ -4,7 +4,7 @@ from cassandra.cluster import Cluster
 app = Celery('tasks', broker='pyamqp://guest@host.docker.internal:5672//')
 
 @app.task
-def adiciona_carro(placa, rodovia, pos_x, pos_y, tempo_da_simulacao):
+def adiciona_carro_banco(placa, rodovia, pos_x, pos_y, tempo_da_simulacao):
     cluster = Cluster(['cassandra'])
     session = cluster.connect()
     session.execute("USE simulacao;")
