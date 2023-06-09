@@ -3,8 +3,8 @@ USE simulacao;
 CREATE TABLE simulacao (
   placa text,
   rodovia text,
-  tempo_da_simulacao double,
+  tempo_da_simulacao int,
   pos_x double,
   pos_y double,
-  PRIMARY KEY ((placa, rodovia), tempo_da_simulacao)
+  PRIMARY KEY ((rodovia,tempo_da_simulacao),placa)
 );
