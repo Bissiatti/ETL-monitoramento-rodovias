@@ -2,7 +2,7 @@
 Abrir terminal novo e digitar os seguintes comandos em ordem, separadamente:
 ```
 cqlsh cassandra 9042
-SOURCE '../create_db.cql'
+SOURCE 'work/create_db.cql'
 ```
 
 Banco Cassandra estará funcionando.

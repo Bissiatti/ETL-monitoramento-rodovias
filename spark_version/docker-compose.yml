@@ -8,6 +8,7 @@ services:
       - ./notebooks:/home/jovyan/work
       - ./mock:/home/jovyan/mock
     environment:
+      #- PYSPARK_SUBMIT_ARGS="--packages datastax:spark-cassandra-connector:3.3.0"
       - JUPYTER_ENABLE_LAB=yes
     command: start-notebook.sh --NotebookApp.token=''
   celery:
