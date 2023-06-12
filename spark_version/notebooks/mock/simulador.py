@@ -45,13 +45,15 @@ colors = [(204, 204, 204),  # cinza claro
           (153, 204, 255),  # azul claro
           (255, 153, 255)]  # roxo claro
 
+timeNow = 0
 def exporta_dados(conteudo): #Essa função
     global key
-    timeNow = time.time()
+    global timeNow
     #with open('test.txt', 'w') as file:
         #file.write(json.dumps(conteudo) + '\n')
     for carro in conteudo.keys():
         adiciona_carro_banco.delay(carro, key, conteudo[carro][0], conteudo[carro][1], timeNow)
+    timeNow += 1
 
 print(time.time())
 
