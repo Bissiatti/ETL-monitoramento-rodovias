@@ -16,11 +16,12 @@ services:
       - mariadb
     volumes:
       - ./celery:/code
-    command: celery -A tasks worker --loglevel=info
+    #command: celery -A work/mock/tasks worker --loglevel=info
   cassandra:
     image: cassandra
     ports:
       - 9042:9042
+    #command: cqlsh -f '../create_db.cql'
   mariadb:
     image: mariadb
     ports:
