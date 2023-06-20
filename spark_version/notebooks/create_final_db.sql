@@ -9,10 +9,10 @@ USE dashboard;
 
 CREATE TABLE carros (
     placa varchar(10)  NOT NULL,
-    pos_x float(4,3)  NOT NULL,
-    pos_y float(4,3)  NOT NULL,
-    aceleracao float(3,3)  NULL,
-    velocidade float(3,3)  NULL,
+    pos_x float(6,3)  NOT NULL,
+    pos_y float(6,3)  NOT NULL,
+    aceleracao float(6,3)  NULL,
+    velocidade float(6,3)  NULL,
     multas int  NULL,
     risco_colisao bool  NULL,
     direcao_perigosa bool  NULL,
@@ -33,9 +33,9 @@ CREATE TABLE contem (
 CREATE TABLE rodovias (
     nome_rodovia varchar(20)  NOT NULL,
     horario_registro bigint  NOT NULL,
-    velocidade_media float(4,2)  NOT NULL,
-    tempo_medio_cruzamento float(4,2)  NOT NULL,
-    tempo_processamento float(6,4)  NOT NULL,
+    velocidade_media float(6,2)  NOT NULL,
+    tempo_medio_cruzamento float(6,2)  NOT NULL,
+    tempo_processamento float(12,4)  NOT NULL,
     total_veiculos int  NULL,
     veiculos_acima_vel int  NOT NULL,
     veiculos_colisao int  NOT NULL,
@@ -52,4 +52,3 @@ ALTER TABLE contem ADD CONSTRAINT contem_rodovias FOREIGN KEY contem_rodovias (r
     REFERENCES rodovias (horario_registro,nome_rodovia);
 
 -- End of file.
-
