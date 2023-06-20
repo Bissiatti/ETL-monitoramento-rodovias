@@ -52,4 +52,3 @@ ALTER TABLE contem ADD CONSTRAINT contem_rodovias FOREIGN KEY contem_rodovias (r
     REFERENCES rodovias (horario_registro,nome_rodovia);
 
 -- End of file.
-
