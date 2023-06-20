@@ -11,6 +11,12 @@ services:
       #- PYSPARK_SUBMIT_ARGS="--packages datastax:spark-cassandra-connector:3.3.0"
       - JUPYTER_ENABLE_LAB=yes
     command: start-notebook.sh --NotebookApp.token=''
+    deploy:
+      resources:
+        limits:
+          cpus: '7'
+          memory: 12G
+
   celery:
     image: celery
     depends_on:
@@ -40,7 +46,13 @@ services:
         - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
         - rabbitmq_go_net
-
+  dashboard:
+    image: dashboard:latest
+    ports:
+      - 3000:3000
+    depends_on:
+      - cassandra
+      - mariadb
 networks:
   rabbitmq_go_net:
     driver: bridge
