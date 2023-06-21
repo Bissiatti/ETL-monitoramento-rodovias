@@ -23,11 +23,12 @@ services:
       - mariadb
     volumes:
       - ./celery:/code
-    command: celery -A tasks worker --loglevel=info
+    #command: celery -A notebooks/mock/tasks worker --loglevel=info -c 2
   cassandra:
     image: cassandra
     ports:
       - 9042:9042
+    #command: cqlsh cassandra -f "create_db.cql"
   mariadb:
     image: mariadb
     ports:
@@ -35,7 +36,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=secret
       - MYSQL_DATABASE=todos
-    command: python work\create_mariadb.py
+    #command: python notebooks/create_mariadb.py
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
@@ -47,15 +48,15 @@ services:
         - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
         - rabbitmq_go_net
-  dashboard:
-    image: dashboard:latest
-    ports:
-      - 3000:3000
-    depends_on:
-      - cassandra
-      - mariadb
-    build:
-      dockerfile: server/Dockerfile
+  # dashboard:
+  #   image: dashboard:latest
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     - cassandra
+  #     - mariadb
+  #   build:
+  #     dockerfile: server/Dockerfile
 networks:
   rabbitmq_go_net:
     driver: bridge
