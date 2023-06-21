@@ -36,12 +36,11 @@ CREATE TABLE carros (
 CREATE TABLE rodovias (
     nome_rodovia varchar(20)  NOT NULL,
     horario_registro bigint  NOT NULL,
-    velocidade_media float(6,2)  NOT NULL,
-    tempo_medio_cruzamento float(6,2)  NOT NULL,
-    tempo_processamento float(12,4)  NOT NULL,
+    velocidade_media float(6,2)  NULL,
+    tempo_medio_cruzamento float(6,2)  NULL,
+    tempo_processamento float(12,4)  NULL,
     total_veiculos int  NULL,
-    veiculos_acima_vel int  NOT NULL,
-    veiculos_colisao int  NOT NULL,
+    veiculos_colisao int  NULL,
     CONSTRAINT rodovias_pk PRIMARY KEY (horario_registro,nome_rodovia)
 );
 
