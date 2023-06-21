@@ -6,5 +6,5 @@ CREATE TABLE simulacao (
   tempo_da_simulacao int,
   pos_x double,
   pos_y double,
-  PRIMARY KEY ((placa,tempo_da_simulacao),rodovia)
+  PRIMARY KEY ((rodovia,tempo_da_simulacao),placa)
 );

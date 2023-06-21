@@ -9,8 +9,8 @@ app.use(express.static('public'));
 const mariadb = require('mariadb');
 
 const pool = mariadb.createPool({
-    host: "host.docker.internal",
-    //host: "localhost",
+    // host: "host.docker.internal",
+    host: "localhost",
     port: 3306,
     user: 'root',
     password: 'secret',
@@ -19,8 +19,9 @@ const pool = mariadb.createPool({
 });
 
 // let conn = await pool.getConnection();
+var i = 1
 
-async function getData() {
+async function getlen() {
     let conn;
     try {
         conn = await pool.getConnection();
@@ -33,35 +34,39 @@ async function getData() {
     }
 }
 
+getlen();
 
-// async function getData() {
-//   let conn;
-//   try {
-//     conn = await pool.getConnection();
-//     const use = await conn.query("USE dashboard");
-//     console.log(use);
-//     const rows = await conn.query("SELECT * from dashboard.carros limit 1");
-//     console.log(rows); // [ {val: 1}, meta: ... ]
-//   } catch (err) {
-//     throw err;
-//   } finally {
-//     if (conn) return conn.end();
-//   }
-//  }
-
-getData().then((data) => {
-  console.log(data)
-});
+function getData() {
+  return new Promise((resolve, reject) => {
+    pool.getConnection()
+      .then(conn => {
+        const str_query = "SELECT * FROM carros WHERE horario_registro = (SELECT MAX(horario_registro) FROM carros);"
+        //const str_query = "SELECT * FROM carros WHERE horario_registro = "+i+");"
+        //i = i + 1
+        conn.query(str_query)
+          .then(rows => {
+            resolve(rows);
+            conn.end();
+          })
+          .catch(err => {
+            reject(err);
+            conn.end();
+          });
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+}
 
 app.get('/data', (req, res) => {
   getData().then((data) => {
-    console.log(data);
-    res.send(data);
+    res.send(JSON.stringify(data, (key, value) =>
+      typeof value === 'bigint' ? value.toString() : value
+    ));
   });
-  // getData().then((data) => {
-  //   res.send(data);
-  // })
 });
+
 
 app.get('/test', (req, res) => {
   res.send('Hello World!');
@@ -70,5 +75,3 @@ app.get('/test', (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
-
-
