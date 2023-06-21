@@ -30,7 +30,8 @@ if interface_graph:
     pygame.display.set_caption("Simulador de tráfego")
 if interface_graph:
     bg = (10, 130, 20)
-fps = 30
+#fps = 30
+fps = 5
 clock = pygame.time.Clock()
 br101.setNumberLanes(params['sentido1Faixas'], params['sentido2Faixas'])
 cars = []

@@ -23,12 +23,12 @@ services:
       - mariadb
     volumes:
       - ./celery:/code
-    #command: celery -A notebooks/mock/tasks worker --loglevel=info -c 2
+    #command: celery -A tasks worker --loglevel=info -c 2
   cassandra:
     image: cassandra
     ports:
       - 9042:9042
-    #command: cqlsh cassandra -f "create_db.cql"
+    #command: cqlsh cassandra 9042 -f "create_db.cql"
   mariadb:
     image: mariadb
     ports:
@@ -48,15 +48,15 @@ services:
         - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
         - rabbitmq_go_net
-  # nodejs:
-  #   build: ./server
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - ./server:/app
-  #     - /app/node_modules
-  #   environment:
-  #     - NODE_ENV=development
+  nodejs:
+    build: ./server
+    ports:
+      - 3000:3000
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
 networks:
   rabbitmq_go_net:
     driver: bridge
