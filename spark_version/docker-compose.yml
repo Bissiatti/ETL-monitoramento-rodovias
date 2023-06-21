@@ -24,6 +24,7 @@ services:
     volumes:
       - ./celery:/code
     #command: celery -A tasks worker --loglevel=info -c 2
+    # python3 mock/simulador.py nome_da_rodovia
   cassandra:
     image: cassandra
     ports:
