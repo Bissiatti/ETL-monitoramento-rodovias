@@ -35,6 +35,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=secret
       - MYSQL_DATABASE=todos
+    command: python work\create_mariadb.py
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
@@ -53,6 +54,8 @@ services:
     depends_on:
       - cassandra
       - mariadb
+    build:
+      dockerfile: server/Dockerfile
 networks:
   rabbitmq_go_net:
     driver: bridge

@@ -17,14 +17,7 @@ file = open('create_final_db.sql', 'r')
 query = file.read()
 
 cursor.execute(query)
-<<<<<<< HEAD
-
-connection.commit()
 print("Schema and Tables succesfully created")
 
-=======
-print("Schema and Tables succesfully created")
-
->>>>>>> 38e256f6bfaa36537a93dab2cd079b63be138acb
 cursor.close()
 connection.close()
