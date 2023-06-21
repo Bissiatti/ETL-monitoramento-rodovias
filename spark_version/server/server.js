@@ -9,8 +9,8 @@ app.use(express.static('public'));
 const mariadb = require('mariadb');
 
 const pool = mariadb.createPool({
-    // host: "host.docker.internal",
-    host: "localhost",
+    host: "host.docker.internal",
+    //host: "localhost",
     port: 3306,
     user: 'root',
     password: 'secret',
