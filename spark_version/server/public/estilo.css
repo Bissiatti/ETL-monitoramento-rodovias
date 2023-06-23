@@ -13,12 +13,16 @@ header {
   
   /* styles for the top bar */
 .top-bar {
-    margin-top: -105px; /* or adjust the value to match the height of your header */
-    display: flex;
-    justify-content: 
-    align-items: center;
+    /* margin-top: -105px; or adjust the value to match the height of your header */
+    margin-top: 50px;
     padding: 10px;
     background-color: #f2f2f2;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
   }
 
   form{
@@ -98,27 +102,31 @@ form{
     height: 50px;
   }
   
-  #data {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-  
-  #tableData {
-    /* Define a largura da primeira coluna */
-    flex: 1;
-    width: 80%;
-  }
-  
-  #data > div {
-    /* Define a largura da segunda coluna */
-    display: block;
-    /* Adiciona margem à direita para separar as colunas */
-    margin-left: 10px;
 
-  }
-
+  
 .text {
     text-align: center;
 }
+
+/* #data-container{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+*/
+#data {
+  margin-top: -70px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+#data-container{
+  margin-left:  4%;
+} 
+
+#data-container2{
+  margin-right: 4%;
+} 
