@@ -18,11 +18,11 @@ class Cars():
         if Lane < 0:
             self.posX = Lane*90 + Width/2 + 15
             self.direction = 1
-            self.posY = -50
+            self.posY = -250
         else:
             self.posX = Lane*90 + Width/2 + 15
             self.direction = -1
-            self.posY = Height + 50
+            self.posY = Height + 250
         self.lane = Lane
         self.vel = np.random.randint(params['velocidadeMinima'],params['velocidadeMaxima']+1)
         self.acc = 0
@@ -69,7 +69,7 @@ class Cars():
             if (self.posY - self.y0)**2 > 100**2:
                 self.trasintion = False
             # if distance is more than Width delete car
-            if (self.posY - self.y0)**2 > 900**2:
+            if (self.posY - self.y0)**2 > 1300**2:
                 return True
             else:
                 return False
