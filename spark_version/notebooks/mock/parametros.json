@@ -81,7 +81,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 200,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   },
   "BR-376": {
@@ -115,7 +115,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 100,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   },
   "BR-153": {
@@ -166,7 +166,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 200,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   },
   "BR-376": {
@@ -200,7 +200,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 100,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   },
   "BR-116": {
@@ -234,7 +234,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 150,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   },
   "BR-070": {
@@ -285,7 +285,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 100,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   },
   "BR-101": {
@@ -319,7 +319,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 200,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   },
   "BR-376": {
@@ -353,7 +353,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 100,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   },
   "BR-116": {
@@ -404,7 +404,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 200,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   },
   "BR-277": {
@@ -438,7 +438,7 @@
     "probabilidadeColisao": 0.1,
     "tempoColisao": 3000,
     "kilometroInicial": 150,
-    "interfaceGrafica": true,
+    "interfaceGrafica": false,
     "tamanhoCarro": 74
   }
 }
