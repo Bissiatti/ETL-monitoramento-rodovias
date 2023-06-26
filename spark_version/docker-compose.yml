@@ -21,6 +21,7 @@ services:
     image: celery
     depends_on:
       - mariadb
+      - rabbitmq
     volumes:
       - ./celery:/code
     #command: celery -A tasks worker --loglevel=info -c 2
