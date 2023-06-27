@@ -221,17 +221,17 @@ c = 2000
 
 start_time = time.time()
 df_cruzamento = ss.createDataFrame([], "rodovia: string, placa: string, tempo_inicio: bigint, tempo_final: bigint,tempo_cruzamento: bigint")
-while i < 1000:
+while True:
     start_time2 = time.time()
     st=time.time()
     query = f"SELECT MAX(tempo_da_simulacao) FROM simulacao;"
     max = list(session.execute(query))[0][0]
 
-    b = max
-    try:
-        a = max - 10000
-    except:
-        a = 0
+    if b > max:
+        b = max
+        a = max - c
+    if a < 1:
+        a = 1
     
     query = f"SELECT * FROM simulacao WHERE tempo_da_simulacao >= {a} AND tempo_da_simulacao <= {b} ALLOW FILTERING;"
     r = list(session.execute(query))
