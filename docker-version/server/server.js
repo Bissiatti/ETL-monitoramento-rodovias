@@ -3,22 +3,22 @@
 const express = require('express');
 const { get } = require('http');
 const app = express();
-const port = "0.0.0.0:8000"; // porta do servidor
-//const port = 3000; // porta do servidor
+const port = "3000"; // porta do servidor
 
 app.use(express.static('public'));
 
 const mysql = require('mysql');
 
 const pool = mysql.createPool({
-    host: "host.docker.internal",
-    //host: "localhost",
-    port: 3306,
-    user: 'root', 
-    password: 'secret',
+    host:"database-2.cpfui5dyhsuy.us-east-1.rds.amazonaws.com",
+    user:'mysql_admin_2',
+    password:'password',
+    port:3306,
     database: "dashboard",
     acquireTimeout: 20000 // 20 seconds
 });
+
+
 
 // let conn = await pool.getConnection();
 var i = 1
