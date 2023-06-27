@@ -130,3 +130,7 @@ form{
 #data-container2{
   margin-right: 4%;
 } 
+
+body{
+  overflow-y: scroll;
+}

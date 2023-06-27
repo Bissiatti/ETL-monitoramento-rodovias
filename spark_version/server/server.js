@@ -3,20 +3,23 @@
 const express = require('express');
 const { get } = require('http');
 const app = express();
-const port = 3000; // porta do servidor
+const port = "3000"; // porta do servidor
+
 app.use(express.static('public'));
 
-const mariadb = require('mariadb');
+const mysql = require('mysql');
 
-const pool = mariadb.createPool({
+const pool = mysql.createPool({
     host: "host.docker.internal",
     //host: "localhost",
     port: 3306,
-    user: 'root',
+    user: 'root', 
     password: 'secret',
     database: "dashboard",
     acquireTimeout: 20000 // 20 seconds
 });
+
+
 
 // let conn = await pool.getConnection();
 var i = 1
@@ -34,7 +37,7 @@ async function getlen() {
     }
 }
 
-getlen();
+// getlen();
 
 function getData() {
   return new Promise((resolve, reject) => {
@@ -58,6 +61,28 @@ function getData() {
       });
   });
 }
+
+function getTop() {
+  return new Promise((resolve, reject) => {
+    pool.getConnection()
+      .then(conn => {
+        const str_query = "SELECT placa, COUNT(DISTINCT rodovia) AS num_rodovias FROM carros GROUP BY placa ORDER BY num_rodovias DESC LIMIT 100;"
+        conn.query(str_query)
+          .then(rows => {
+            resolve(rows);
+            conn.end();
+          })
+          .catch(err => {
+            reject(err);
+            conn.end();
+          });
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+}
+
 
 function getRodovia() {
   return new Promise((resolve, reject) => {
@@ -92,6 +117,14 @@ app.get('/data', (req, res) => {
 
 app.get('/rodovia', (req, res) => {
   getRodovia().then((data) => {
+    res.send(JSON.stringify(data, (key, value) =>
+      typeof value === 'bigint' ? value.toString() : value
+    ));
+  });
+});
+
+app.get('/top', (req, res) => {
+  getTop().then((data) => {
     res.send(JSON.stringify(data, (key, value) =>
       typeof value === 'bigint' ? value.toString() : value
     ));

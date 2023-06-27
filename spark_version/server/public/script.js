@@ -71,7 +71,7 @@ function updateData2() {
     .then(response => response.json())
     .then(data => {
       // Insert data into HTML
-      const element2 = document.getElementById('data-container2');
+      const element2 = document.getElementById('data-container2-1');
       console.log(data);
       const table = document.createElement('table');
 
@@ -93,10 +93,40 @@ function updateData2() {
       element2.innerHTML = ''; // Clear previous data
       element2.appendChild(table);
     });
+    fetch('/top')
+    .then(response => response.json())
+    .then(data => {
+      // Insert data into HTML
+      const element = document.getElementById('data-container2-2');
+      const table = document.createElement('table');
+      const headerRow = document.createElement('tr');
+
+      // Create table headers
+      Object.keys(data[0]).forEach(key => {
+        const th = document.createElement('th');
+        th.textContent = key;
+        headerRow.appendChild(th);
+      });
+      table.appendChild(headerRow);
+
+      // Create table rows
+      data.forEach(rowData => {
+        const tr = document.createElement('tr');
+        Object.values(rowData).forEach(value => {
+          const td = document.createElement('td');
+          td.textContent = value;
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      });
+
+      // Insert table into HTML
+      element.innerHTML = ''; // Clear previous data
+      element.appendChild(table);
+    });
 }
 
 
-  
   
   let intervalId;
 
