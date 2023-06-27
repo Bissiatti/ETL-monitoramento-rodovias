@@ -44,13 +44,13 @@ CREATE TABLE rodovias (
     CONSTRAINT rodovias_pk PRIMARY KEY (horario_registro,nome_rodovia)
 );
 
--- foreign keys
--- Reference: contem_lista_carros (table: contem)
-ALTER TABLE contem ADD CONSTRAINT contem_lista_carros FOREIGN KEY contem_lista_carros (carros_placa)
-    REFERENCES carros (placa);
+-- -- foreign keys
+-- -- Reference: contem_lista_carros (table: contem)
+-- ALTER TABLE contem ADD CONSTRAINT contem_lista_carros FOREIGN KEY contem_lista_carros (carros_placa)
+--     REFERENCES carros (placa);
 
--- Reference: contem_rodovias (table: contem)
-ALTER TABLE contem ADD CONSTRAINT contem_rodovias FOREIGN KEY contem_rodovias (rodovias_horario_registro,rodovias_nome_rodovia)
-    REFERENCES rodovias (horario_registro,nome_rodovia);
+-- -- Reference: contem_rodovias (table: contem)
+-- ALTER TABLE contem ADD CONSTRAINT contem_rodovias FOREIGN KEY contem_rodovias (rodovias_horario_registro,rodovias_nome_rodovia)
+--     REFERENCES rodovias (horario_registro,nome_rodovia);
 
 -- End of file.
