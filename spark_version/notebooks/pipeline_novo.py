@@ -60,7 +60,7 @@ def atualiza_media(media_atual, tamanho_atual, media_add, tamanho_add):
 
 def processa_velocidade_media(batch):
     global vel_media, n_vel_media
-    batch = batch.na.fill(0, subset=['vel_y'])
+    batch = batch.filter(F.col("vel_y").isNotNull())
     
     # group by "rodovia" and aggregate the mean of "velocidade"
     mean_df = batch.groupBy("rodovia").agg(F.mean(F.abs("vel_y").alias('vel_y')).alias('vel_y'))
@@ -78,6 +78,29 @@ def processa_velocidade_media(batch):
     for key in length_dict.keys():
         n_vel_media[key]+=length_dict[key]
         vel_media[key] = atualiza_media(vel_media[key], n_vel_media[key], mean_dict[key], length_dict[key])
+
+def processa_tempo_cruzamento(batch):
+    global n_tempo_medio, tempo_medio
+    batch = batch.filter(F.col("tempo_cruzamento").isNotNull())
+    # group by "rodovia" and aggregate the mean of "velocidade"
+    batch.show()
+    mean_df = batch.groupBy("rodovia").agg(F.mean("tempo_cruzamento"))
+    mean_df = mean_df.withColumnRenamed("avg(tempo_cruzamento)", "tempo_cruzamento")
+    # collect the rows as a list
+    mean_rows = mean_df.collect()
+    # create a dictionary with "rodovia" as key and mean as value
+    mean_dict = {row.asDict()["rodovia"]: row.asDict()["tempo_cruzamento"] for row in mean_rows}
+
+    # group by "rodovia" and aggregate the mean of "velocidade"
+    length_df = batch.groupBy("rodovia").agg(F.count("tempo_cruzamento"))
+    length_df = length_df.withColumnRenamed("count(tempo_cruzamento)", "tempo_cruzamento")
+    # collect the rows as a list
+    length_rows = length_df.collect()
+    # create a dictionary with "rodovia" as key and mean as value
+    length_dict = {row.asDict()["rodovia"]: row.asDict()["tempo_cruzamento"] for row in length_rows}
+    for key in length_dict.keys():
+        n_tempo_medio[key] += length_dict[key]
+        tempo_medio[key] = atualiza_media(tempo_medio[key], n_tempo_medio[key], mean_dict[key], length_dict[key])
 
 total = 0
 last = 0
@@ -125,28 +148,6 @@ def atualiza_media(media_atual, tamanho_atual, media_add, tamanho_add):
     tamanho_total = tamanho_atual + tamanho_add
     return (media_atual/tamanho_total)*tamanho_atual + (media_add/tamanho_total)*tamanho_add
 
-def processa_velocidade_media(batch):
-    global vel_media, n_vel_media
-    batch = batch.na.fill(0, subset=['vel_y'])
-    
-    # group by "rodovia" and aggregate the mean of "velocidade"
-    mean_df = batch.groupBy("rodovia").agg(F.mean(F.abs("vel_y").alias('vel_y')).alias('vel_y'))
-    # collect the rows as a list
-    mean_rows = mean_df.collect()
-    # create a dictionary with "rodovia" as key and mean as value
-    mean_dict = {row.asDict()["rodovia"]: row.asDict()["vel_y"] for row in mean_rows}
-    # group by "rodovia" and aggregate the mean of "velocidade"
-    length_df = batch.groupBy("rodovia").agg(F.count("vel_y"))
-    length_df = length_df.withColumnRenamed("count(vel_y)", "vel_y")
-    # collect the rows as a list
-    length_rows = length_df.collect()
-    # create a dictionary with "rodovia" as key and mean as value
-    length_dict = {row.asDict()["rodovia"]: row.asDict()["vel_y"] for row in length_rows}
-    for key in length_dict.keys():
-        n_vel_media[key]+=length_dict[key]
-        vel_media[key] = atualiza_media(vel_media[key], n_vel_media[key], mean_dict[key], length_dict[key])
-
-
 def multas(batch):
     global df_multas, T
     # Criar uma janela que particiona por placa e ordene por tempo_da_simulacao
@@ -175,7 +176,6 @@ def multas(batch):
 T_perigosa = 200
 N_eventos = 3
 I_perigosa = 1000
-
 
 def perigosas(batch):
     global df_perigosa, T_perigosa, N_eventos,I_perigosa
@@ -211,19 +211,27 @@ def getVelMedia(df2):
     df2['vel_media'] = df2['rodovia'].map(vel_media)
     return df2
 
-start_time = time.time()
+def getTempoMedia(df2):
+    df2['tempo_medio'] = df2['rodovia'].map(tempo_medio)
+    return df2
+
 a = 1
-b = 200
-c = 200
-while True:
+b = 2000
+c = 2000
+
+start_time = time.time()
+df_cruzamento = ss.createDataFrame([], "rodovia: string, placa: string, tempo_inicio: bigint, tempo_final: bigint,tempo_cruzamento: bigint")
+while i < 1000:
     start_time2 = time.time()
     st=time.time()
     query = f"SELECT MAX(tempo_da_simulacao) FROM simulacao;"
     max = list(session.execute(query))[0][0]
 
-    if b > max:
-        b = max
-        a = max - 200
+    b = max
+    try:
+        a = max - 10000
+    except:
+        a = 0
     
     query = f"SELECT * FROM simulacao WHERE tempo_da_simulacao >= {a} AND tempo_da_simulacao <= {b} ALLOW FILTERING;"
     r = list(session.execute(query))
@@ -231,7 +239,9 @@ while True:
     et=time.time()
     
     if r != []:
+        print("GO!")
         i+=1
+        
         st=time.time()
         
         df = ss.createDataFrame(r)
@@ -251,7 +261,7 @@ while True:
         lead_column = lead(col("posicao_prevista")).over(window_spec_rf) - col("posicao_prevista")
         
         # Add the lag column to the DataFrame
-        df = df.withColumn("Risco_Colisão", when(((lag_column < 0) & (col("rodovia") == lag(col("rodovia")).over(window_spec_rf)) & (col("pos_x") ==    lag(col("pos_x")).over(window_spec_rf)))| ((lead_column < 0) & (col("rodovia") == lead(col("rodovia")).over(window_spec_rf)) & (col("pos_x") == lead(col("pos_x")).over(window_spec_rf))), 1).otherwise(0))
+        df = df.withColumn("Risco_Colisão", when(((lag_column < 0) & (col("rodovia") == lag(col("rodovia")).over(window_spec_rf)) & (col("pos_x") == lag(col("pos_x")).over(window_spec_rf)))| ((lead_column < 0) & (col("rodovia") == lead(col("rodovia")).over(window_spec_rf)) & (col("pos_x") == lead(col("pos_x")).over(window_spec_rf))), 1).otherwise(0))
 
         processa_velocidade_media(df)
         
@@ -266,13 +276,28 @@ while True:
         # contador de trocas
         
         df = df.withColumn('multado',((F.col('acima_vel') == 1) & (lag('acima_vel').over(windowSpec) == 0)))
+        df = df.withColumn("on_road", (((col("pos_y") > 0) & (col('pos_y') < 800))))
+        
+        df = df.withColumn('tempo_inicio',when(((F.col('on_road') == True) & (lag('on_road').over(windowSpec) == False)), F.col("tempo_da_simulacao")).otherwise(None))
+        df = df.withColumn('tempo_final',when(((F.col('on_road') == True) & (lead('on_road').over(windowSpec) == False)), F.col("tempo_da_simulacao")).otherwise(None))
+        df = df.withColumn('tempo_cruzamento',F.lit(None))
+        df_cruzamento = df_cruzamento.union(df.select('rodovia', 'placa', 'tempo_inicio','tempo_final','tempo_cruzamento').filter((F.col('vel_y') != 0) & (F.col('tempo_inicio').isNotNull() | F.col('tempo_final').isNotNull())))
+        windowSpec2 = Window.partitionBy('placa','rodovia').orderBy('tempo_final')
+        
+        df_cruzamento = df_cruzamento.withColumn('tempo_cruzamento', col('tempo_final') - lag('tempo_inicio').over(windowSpec2))
+        
+        processa_tempo_cruzamento(df_cruzamento)
+        df_cruzamento = df_cruzamento.filter(df_cruzamento.tempo_cruzamento.isNull())
+        df = df.withColumn('time_on_road',F.lit(0))
         
         windowSpec = Window.partitionBy("placa",'rodovia').orderBy('tempo_da_simulacao')
         
         df = df.withColumn("prev_pos_y", lag("pos_y", 1).over(windowSpec))
-        df = df.withColumn("on_road", (((col("pos_y") > 0) & (col('pos_y') < 800)) & (col("prev_pos_y") > 0)).cast("int"))
-        df = df.withColumn('time_on_road',F.lit(0))
+        windowSpec = Window.partitionBy('rodovia',"placa").orderBy('tempo_da_simulacao')
+        
+        df = df.withColumn("prev_pos_y", lag("pos_y", 1).over(windowSpec))
 
+        
         multas(df)
 
         perigosas(df)
@@ -343,18 +368,20 @@ while True:
         datap2 = df2.toPandas()
 
         datap2 = getVelMedia(datap2)
+
+        datap2 = getTempoMedia(datap2)
         
-        query2 = f""" REPLACE IGNORE INTO rodovias (nome_rodovia,horario_registro,total_veiculos,veiculos_colisao,tempo_processamento,velocidade_media)
+        query2 = f""" REPLACE INTO rodovias (nome_rodovia,horario_registro,total_veiculos,veiculos_colisao,tempo_processamento,velocidade_media,tempo_medio_cruzamento)
         
                 VALUES {','.join([str(i) for i in list(datap2.to_records(index=False))])};
                         
                 """.replace("None", "NULL").replace("\n", "").replace("nan", "NULL")        
             
-        data = df.select('placa','pos_x','pos_y','acel_y','vel_y', 'rodovia', 'tempo_da_simulacao',F.col('proibidoCircular'),'Risco_Colisão',F.col('perigosa_I'))#,'acima_vel')
+        data = df.select('placa','pos_x','pos_y','acel_y','vel_y', 'rodovia', 'tempo_da_simulacao',F.col('proibidoCircular'),'Risco_Colisão',F.col('troca_faixa'))#,'acima_vel')
         datap = data.toPandas()
 
 
-        query = f""" REPLACE IGNORE INTO carros (placa, pos_x, pos_y, aceleracao, velocidade, rodovia, horario_registro, multas, risco_colisao, direcao_perigosa)
+        query = f""" REPLACE INTO carros (placa, pos_x, pos_y, aceleracao, velocidade, rodovia, horario_registro, multas, risco_colisao, direcao_perigosa)
     
                     VALUES {','.join([str(i) for i in list(datap.to_records(index=False))])};
                     
@@ -369,5 +396,5 @@ while True:
         end_time = time.time()
         elapsed_time = end_time - start_time2
         # total = total + elapsed_time
-        a =b+1
-        b =b+c
+    
+        print('Done!')
