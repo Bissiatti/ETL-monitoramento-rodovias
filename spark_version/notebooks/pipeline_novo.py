@@ -174,7 +174,7 @@ def multas(batch):
     df_multas = df.filter(df.num_linha <= 10).select('placa','total_multas','tempo_da_simulacao','proibidoCircular')
 
 T_perigosa = 200
-N_eventos = 3
+N_eventos = 10
 I_perigosa = 1000
 
 def perigosas(batch):
