@@ -21,7 +21,7 @@ bash init_dbs.sh
 
 ```
 
-- Obs: caso ocorra algum erro de p
+- Obs: caso ocorra algum erro no comando acima, aguarde alguns segundos e tente novamente. Os bancos de dados podem demorar alguns segundos para iniciar.
 
 Para iniciar o simulador, no terminal do notebook, execute o seguinte comando:
 
