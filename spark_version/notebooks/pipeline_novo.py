@@ -216,8 +216,8 @@ def getTempoMedia(df2):
     return df2
 
 a = 1
-b = 200
-c = 200
+b = 600
+c = 600
 
 start_time = time.time()
 df_cruzamento = ss.createDataFrame([], "rodovia: string, placa: string, tempo_inicio: bigint, tempo_final: bigint,tempo_cruzamento: bigint")
