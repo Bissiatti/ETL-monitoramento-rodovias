@@ -26,7 +26,7 @@ bash init_dbs.sh
 Para iniciar o simulador, no terminal do notebook, execute o seguinte comando:
 
 ```bash
-python3 mock/simulator.py
+python3 mock/simulator.py BR-116
 ```
 
 Para iniciar o ETL pyspark, no terminal do notebook, execute o seguinte comando:
