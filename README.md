@@ -28,6 +28,7 @@ Para iniciar o simulador, no terminal do notebook, execute o seguinte comando:
 ```bash
 python3 mock/simulator.py BR-116
 ```
+Outras rodovias podem ser instanciadas a partir do mesmo comando, basta abrir um outro terminal e executar BR-XXX onde XXX é um número de uma rodovia contida no arquivo parametros.json dentro da pasta spark_version/norebooks/mock como BR-040, BR-135, BR-050, e BR-060.
 
 Para iniciar o ETL pyspark, no terminal do notebook, execute o seguinte comando:
 
