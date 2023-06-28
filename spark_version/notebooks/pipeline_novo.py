@@ -174,7 +174,7 @@ def multas(batch):
     df_multas = df.filter(df.num_linha <= 10).select('placa','total_multas','tempo_da_simulacao','proibidoCircular')
 
 T_perigosa = 200
-N_eventos = 10
+N_eventos = 3
 I_perigosa = 1000
 
 def perigosas(batch):
@@ -216,22 +216,22 @@ def getTempoMedia(df2):
     return df2
 
 a = 1
-b = 600
-c = 600
+b = 100
+c = 100
 
 start_time = time.time()
 df_cruzamento = ss.createDataFrame([], "rodovia: string, placa: string, tempo_inicio: bigint, tempo_final: bigint,tempo_cruzamento: bigint")
-while True:
+while i < 1000:
     start_time2 = time.time()
     st=time.time()
     query = f"SELECT MAX(tempo_da_simulacao) FROM simulacao;"
     max = list(session.execute(query))[0][0]
 
-    if b > max:
-        b = max
-        a = max - c
-    if a < 1:
-        a = 1
+    b = max
+    try:
+        a = max - 100
+    except:
+        a = 0
     
     query = f"SELECT * FROM simulacao WHERE tempo_da_simulacao >= {a} AND tempo_da_simulacao <= {b} ALLOW FILTERING;"
     r = list(session.execute(query))
