@@ -3,23 +3,20 @@
 const express = require('express');
 const { get } = require('http');
 const app = express();
-const port = "3000"; // porta do servidor
-
+const port = 3000; // porta do servidor
 app.use(express.static('public'));
 
-const mysql = require('mysql');
+const mariadb = require('mariadb');
 
-const pool = mysql.createPool({
+const pool = mariadb.createPool({
     host: "host.docker.internal",
     //host: "localhost",
     port: 3306,
-    user: 'root', 
+    user: 'root',
     password: 'secret',
     database: "dashboard",
     acquireTimeout: 20000 // 20 seconds
 });
-
-
 
 // let conn = await pool.getConnection();
 var i = 1
@@ -37,7 +34,7 @@ async function getlen() {
     }
 }
 
-// getlen();
+getlen();
 
 function getData() {
   return new Promise((resolve, reject) => {

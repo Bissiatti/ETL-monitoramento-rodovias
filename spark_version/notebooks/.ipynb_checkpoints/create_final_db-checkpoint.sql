@@ -11,10 +11,10 @@ CREATE TABLE carros (
     placa varchar(10)  NOT NULL,
     horario_registro bigint  NOT NULL,
     rodovia varchar(20) NOT NULL,
-    pos_x float(6,3)  NOT NULL,
-    pos_y float(6,3)  NOT NULL,
-    aceleracao float(6,3)  NULL,
-    velocidade float(6,3)  NULL,
+    pos_x float(8,3)  NOT NULL,
+    pos_y float(8,3)  NOT NULL,
+    aceleracao float(8,3)  NULL,
+    velocidade float(8,3)  NULL,
     multas int  NULL,
     risco_colisao bool  NULL,
     direcao_perigosa bool  NULL,
@@ -36,22 +36,21 @@ CREATE TABLE carros (
 CREATE TABLE rodovias (
     nome_rodovia varchar(20)  NOT NULL,
     horario_registro bigint  NOT NULL,
-    velocidade_media float(6,2)  NOT NULL,
-    tempo_medio_cruzamento float(6,2)  NOT NULL,
-    tempo_processamento float(12,4)  NOT NULL,
+    velocidade_media float(10,2)  NULL,
+    tempo_medio_cruzamento float(10,2)  NULL,
+    tempo_processamento float(12,4)  NULL,
     total_veiculos int  NULL,
-    veiculos_acima_vel int  NOT NULL,
-    veiculos_colisao int  NOT NULL,
+    veiculos_colisao int  NULL,
     CONSTRAINT rodovias_pk PRIMARY KEY (horario_registro,nome_rodovia)
 );
 
--- foreign keys
--- Reference: contem_lista_carros (table: contem)
-ALTER TABLE contem ADD CONSTRAINT contem_lista_carros FOREIGN KEY contem_lista_carros (carros_placa)
-    REFERENCES carros (placa);
+-- -- foreign keys
+-- -- Reference: contem_lista_carros (table: contem)
+-- ALTER TABLE contem ADD CONSTRAINT contem_lista_carros FOREIGN KEY contem_lista_carros (carros_placa)
+--     REFERENCES carros (placa);
 
--- Reference: contem_rodovias (table: contem)
-ALTER TABLE contem ADD CONSTRAINT contem_rodovias FOREIGN KEY contem_rodovias (rodovias_horario_registro,rodovias_nome_rodovia)
-    REFERENCES rodovias (horario_registro,nome_rodovia);
+-- -- Reference: contem_rodovias (table: contem)
+-- ALTER TABLE contem ADD CONSTRAINT contem_rodovias FOREIGN KEY contem_rodovias (rodovias_horario_registro,rodovias_nome_rodovia)
+--     REFERENCES rodovias (horario_registro,nome_rodovia);
 
 -- End of file.

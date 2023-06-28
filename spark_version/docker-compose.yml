@@ -1,22 +1,5 @@
 version: "3.9"
 services:
-  pyspark:
-    build: ./ # use the current directory as the source
-    ports:
-      - 8888:8888 # publish the port 8888 to the host
-    volumes:
-      - ./notebooks:/home/jovyan/work
-      - ./mock:/home/jovyan/mock
-    environment:
-      #- PYSPARK_SUBMIT_ARGS="--packages datastax:spark-cassandra-connector:3.3.0"
-      - JUPYTER_ENABLE_LAB=yes
-    command: start-notebook.sh --NotebookApp.token=''
-    deploy:
-      resources:
-        limits:
-          cpus: '7'
-          memory: 12G
-
   celery:
     image: celery
     depends_on:
@@ -59,6 +42,23 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
+  pyspark:
+    build: ./ # use the current directory as the source
+    ports:
+      - 8888:8888 # publish the port 8888 to the host
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./mock:/home/jovyan/mock
+    environment:
+      #- PYSPARK_SUBMIT_ARGS="--packages datastax:spark-cassandra-connector:3.3.0"
+      - JUPYTER_ENABLE_LAB=yes
+    command: start-notebook.sh --NotebookApp.token=''
+    deploy:
+      resources:
+        limits:
+          cpus: '7'
+          memory: 12G
+    
 networks:
   rabbitmq_go_net:
     driver: bridge
