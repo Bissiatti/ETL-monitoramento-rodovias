@@ -247,24 +247,29 @@ while i < 1000:
         df = ss.createDataFrame(r)
         
         windowSpec = Window.partitionBy("placa").orderBy("tempo_da_simulacao")
-        
+        # Calcula velocidade
         df = df.withColumn("prev_pos_y", lag("pos_y", 1).over(windowSpec))
         df = df.withColumn("prev_tempo_da_simulacao", lag("tempo_da_simulacao", 1).over(windowSpec))
         df = df.withColumn("vel_y", (col("pos_y") - col("prev_pos_y")) / (col("tempo_da_simulacao") - col("prev_tempo_da_simulacao")))
+
+        # Calcula aceleração
         df = df.withColumn("prev_vel_y", lag("vel_y", 1).over(windowSpec))
         df = df.withColumn("acel_y", (col("vel_y") - col("prev_vel_y")) / (col("tempo_da_simulacao") - col("prev_tempo_da_simulacao")))
-        
+
+        # Calcula posição prevista
         df = df.withColumn("posicao_prevista", col("pos_y") + col("vel_y") * (collision_tolerance) + col("acel_y") * collision_tolerance_quad)
-        
+
+        # Detecta risco de colisão        
         window_spec_rf = Window.partitionBy("rodovia", "pos_x").orderBy('pos_y')
         lag_column = col("posicao_prevista") - lag(col("posicao_prevista")).over(window_spec_rf)
         lead_column = lead(col("posicao_prevista")).over(window_spec_rf) - col("posicao_prevista")
         
-        # Add the lag column to the DataFrame
         df = df.withColumn("Risco_Colisão", when(((lag_column < 0) & (col("rodovia") == lag(col("rodovia")).over(window_spec_rf)) & (col("pos_x") == lag(col("pos_x")).over(window_spec_rf)))| ((lead_column < 0) & (col("rodovia") == lead(col("rodovia")).over(window_spec_rf)) & (col("pos_x") == lead(col("pos_x")).over(window_spec_rf))), 1).otherwise(0))
 
+        # Atualiza velocidades médias
         processa_velocidade_media(df)
-        
+
+        # Adiciona dados de máximo das rodovias
         df = df.join(Velocidades_Maximas,on='rodovia',how='left')
         df = df.join(Aceleracoes_Maximas,on='rodovia',how='left')
         
@@ -273,11 +278,12 @@ while i < 1000:
         
         df = df.withColumn("troca_faixa", col("pos_x") != lag("pos_x", 1).over(windowSpec))
         
-        # contador de trocas
         
+        # Detecta se deve ser aplicada multa
         df = df.withColumn('multado',((F.col('acima_vel') == 1) & (lag('acima_vel').over(windowSpec) == 0)))
+               
+        # Registra e calcula tempos de travessia
         df = df.withColumn("on_road", (((col("pos_y") > 0) & (col('pos_y') < 800))))
-        
         df = df.withColumn('tempo_inicio',when(((F.col('on_road') == True) & (lag('on_road').over(windowSpec) == False)), F.col("tempo_da_simulacao")).otherwise(None))
         df = df.withColumn('tempo_final',when(((F.col('on_road') == True) & (lead('on_road').over(windowSpec) == False)), F.col("tempo_da_simulacao")).otherwise(None))
         df = df.withColumn('tempo_cruzamento',F.lit(None))
